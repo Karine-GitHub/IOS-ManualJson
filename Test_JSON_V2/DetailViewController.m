@@ -34,7 +34,7 @@
 - (void)configureView
 {
     // Update the user interface for the detail item.
-    NSString *msg = @"<html><center><font color='orange'>There is no content</font></center></html>";
+    NSString *msg = @"<html><center><font color='blue'>There is no content</font></center></html>";
 
     if (self.detailItem) {
         if ([[self.detailItem objectForKey:@"HtmlContent"] isKindOfClass:[NSNull class]]) {
@@ -44,7 +44,12 @@
             [self.content loadHTMLString:[self.detailItem objectForKey:@"HtmlContent"] baseURL:nil];            
         }
 
-        self.navigationItem.title = [self.detailItem objectForKey:@"Name"];
+        if ([[self.detailItem objectForKey:@"Name"] isKindOfClass:[NSNull class]]) {
+            self.navigationItem.title = @"No Name property";
+        }
+        else {
+            self.navigationItem.title = [self.detailItem objectForKey:@"Name"];
+        }
     }
 }
 

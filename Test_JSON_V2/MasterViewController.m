@@ -64,8 +64,15 @@
     {
         NSLog(@"%@", s);
     }
+    
     // Get all pages of the application
-    allPages = [application objectForKey:@"Pages"];
+    // Objective-C interprets the string <null> as a NSNull object. Exception is throw when it is used in a method
+    if ([[application objectForKey:@"Pages"] isKindOfClass:[NSNull class]]) {
+        allPages = nil;
+    } else {
+        allPages = [application objectForKey:@"Pages"];
+    }
+    
     NSLog(@"%d", allPages.count);
     self.navigationItem.title = [application objectForKey:@"Name"];
     
@@ -108,12 +115,13 @@
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
 
-    //NSDate *object = _objects[indexPath.row];
-    //cell.textLabel.text = [object description];
     page = allPages[indexPath.row];
-    NSString *txt = [page objectForKey:@"Name"];
-    cell.textLabel.text = [txt description];
-
+    
+    if ([[page objectForKey:@"Name"] isKindOfClass:[NSNull class]]) {
+        cell.textLabel.text = @"No Name property";
+    } else {
+        cell.textLabel.text = [[page objectForKey:@"Name"] description];
+    }
     return cell;
 }
 
