@@ -11,7 +11,10 @@
 #import "DetailViewController.h"
 
 @interface MasterViewController () {
-    NSMutableArray *_objects;
+    NSMutableArray *JSONfile;
+    NSMutableDictionary *application;
+    NSMutableArray *allPages;
+    NSMutableDictionary *page;
 }
 @end
 
@@ -29,12 +32,45 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
-    self.navigationItem.leftBarButtonItem = self.editButtonItem;
-
-    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(insertNewObject:)];
-    self.navigationItem.rightBarButtonItem = addButton;
+    
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
+    
+    // Read Json file
+    NSError *error = [[NSError alloc] init];
+    
+#pragma Network File
+    // Read Json file in network
+    //NSURL *url = [NSURL URLWithString:@"http://localhost:1130/api"];
+    //NSData *fileByWeb = [NSData dataWithContentsOfURL:url options:NSDataReadingMappedIfSafe error:&error];
+    
+    //JSONfile = (NSMutableArray *)[NSJSONSerialization JSONObjectWithData:fileByWeb options:NSJSONReadingMutableLeaves error:&error];
+    
+#pragma Local File
+    // Read Json file in local
+    NSFileManager *fm;
+    fm = [NSFileManager defaultManager];
+    NSString *mydirectory = @"/Users/Karine/Projects/Test_Json/";
+    
+    [fm changeCurrentDirectoryPath:mydirectory];
+    // Get its content
+    NSData *file = [fm contentsAtPath:[NSString stringWithFormat:@"%@%@", mydirectory, @"APIapplication.json"]];
+    
+    JSONfile = (NSMutableArray *)[NSJSONSerialization JSONObjectWithData:file options:NSJSONReadingMutableLeaves error:&error];
+
+#pragma Manual Parsing of Json File
+    // Keep only the first application
+    application = JSONfile[0];
+    for (NSString *s in application.allKeys)
+    {
+        NSLog(@"%@", s);
+    }
+    // Get all pages of the application
+    allPages = [application objectForKey:@"Pages"];
+    NSLog(@"%d", allPages.count);
+    self.navigationItem.title = [application objectForKey:@"Name"];
+    
+    // Insert rows in TableView
+    [self insertNewObject];
 }
 
 - (void)didReceiveMemoryWarning
@@ -43,14 +79,17 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)insertNewObject:(id)sender
+- (void)insertNewObject//:(id)sender
 {
-    if (!_objects) {
-        _objects = [[NSMutableArray alloc] init];
+    if (!page) {
+        page = [[NSMutableDictionary alloc] init];
     }
-    [_objects insertObject:[NSDate date] atIndex:0];
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-    [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+    for (NSInteger nbpage=0; nbpage<((allPages.count)); ++nbpage) {
+        NSLog(@"%d", nbpage);
+
+        NSIndexPath *indexPathTable = [NSIndexPath indexPathForRow:0 inSection:0];
+        [self.tableView insertRowsAtIndexPaths:@[indexPathTable] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
 }
 
 #pragma mark - Table View
@@ -62,33 +101,37 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return _objects.count;
+    return allPages.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
 
-    NSDate *object = _objects[indexPath.row];
-    cell.textLabel.text = [object description];
+    //NSDate *object = _objects[indexPath.row];
+    //cell.textLabel.text = [object description];
+    page = allPages[indexPath.row];
+    NSString *txt = [page objectForKey:@"Name"];
+    cell.textLabel.text = [txt description];
+
     return cell;
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // Return NO if you do not want the specified item to be editable.
-    return YES;
+    return NO;
 }
 
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        [_objects removeObjectAtIndex:indexPath.row];
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
-    }
-}
+//- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+//{
+//    if (editingStyle == UITableViewCellEditingStyleDelete) {
+//        [_objects removeObjectAtIndex:indexPath.row];
+//        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+//    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
+//        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
+//    }
+//}
 
 /*
 // Override to support rearranging the table view.
@@ -109,8 +152,8 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        NSDate *object = _objects[indexPath.row];
-        self.detailViewController.detailItem = object;
+        page = allPages[indexPath.row];
+        self.detailViewController.detailItem = page;
     }
 }
 
@@ -118,8 +161,8 @@
 {
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        NSDate *object = _objects[indexPath.row];
-        [[segue destinationViewController] setDetailItem:object];
+        page = allPages[indexPath.row];
+        [[segue destinationViewController] setDetailItem:page];
     }
 }
 

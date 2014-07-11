@@ -17,7 +17,7 @@
                BlueprintIdentifier = "84E30EAD196E6271000D40A2"
                BuildableName = "Test_JSON_V2.app"
                BlueprintName = "Test_JSON_V2"
-               ReferencedContainer = "container:Test_JSON_V2.xcodeproj">
+               ReferencedContainer = "container:Test_Json_v2.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,7 +35,7 @@
                BlueprintIdentifier = "84E30ED4196E6271000D40A2"
                BuildableName = "Test_JSON_V2Tests.xctest"
                BlueprintName = "Test_JSON_V2Tests"
-               ReferencedContainer = "container:Test_JSON_V2.xcodeproj">
+               ReferencedContainer = "container:Test_Json_v2.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -45,7 +45,7 @@
             BlueprintIdentifier = "84E30EAD196E6271000D40A2"
             BuildableName = "Test_JSON_V2.app"
             BlueprintName = "Test_JSON_V2"
-            ReferencedContainer = "container:Test_JSON_V2.xcodeproj">
+            ReferencedContainer = "container:Test_Json_v2.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </TestAction>
@@ -64,7 +64,7 @@
             BlueprintIdentifier = "84E30EAD196E6271000D40A2"
             BuildableName = "Test_JSON_V2.app"
             BlueprintName = "Test_JSON_V2"
-            ReferencedContainer = "container:Test_JSON_V2.xcodeproj">
+            ReferencedContainer = "container:Test_Json_v2.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -82,7 +82,7 @@
             BlueprintIdentifier = "84E30EAD196E6271000D40A2"
             BuildableName = "Test_JSON_V2.app"
             BlueprintName = "Test_JSON_V2"
-            ReferencedContainer = "container:Test_JSON_V2.xcodeproj">
+            ReferencedContainer = "container:Test_Json_v2.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

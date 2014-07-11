@@ -7,10 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <UIKit/UIWebView.h>
 
-@interface DetailViewController : UIViewController <UISplitViewControllerDelegate>
+@interface DetailViewController : UIViewController <UISplitViewControllerDelegate, UIWebViewDelegate>
 
 @property (strong, nonatomic) id detailItem;
 
-@property (weak, nonatomic) IBOutlet UILabel *detailDescriptionLabel;
+@property (weak, nonatomic) IBOutlet UIWebView *content;
+
+@property (weak, nonatomic) IBOutlet UINavigationItem *navigation;
+
 @end

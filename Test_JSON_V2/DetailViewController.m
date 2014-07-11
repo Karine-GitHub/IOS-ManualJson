@@ -25,7 +25,7 @@
         // Update the view.
         [self configureView];
     }
-
+    
     if (self.masterPopoverController != nil) {
         [self.masterPopoverController dismissPopoverAnimated:YES];
     }        
@@ -34,9 +34,17 @@
 - (void)configureView
 {
     // Update the user interface for the detail item.
+    NSString *msg = @"<html><center><font color='orange'>There is no content</font></center></html>";
 
     if (self.detailItem) {
-        self.detailDescriptionLabel.text = [self.detailItem description];
+        if ([[self.detailItem objectForKey:@"HtmlContent"] isKindOfClass:[NSNull class]]) {
+            [self.content loadHTMLString:msg baseURL:nil];
+        }
+        else {
+            [self.content loadHTMLString:[self.detailItem objectForKey:@"HtmlContent"] baseURL:nil];            
+        }
+
+        self.navigationItem.title = [self.detailItem objectForKey:@"Name"];
     }
 }
 
@@ -67,6 +75,24 @@
     // Called when the view is shown again in the split view, invalidating the button and popover controller.
     [self.navigationItem setLeftBarButtonItem:nil animated:YES];
     self.masterPopoverController = nil;
+}
+
+#pragma mark - Web View
+- (void)webViewDidStartLoad:(UIWebView *)webView
+{
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+                
+}
+- (void)webViewDidFinishLoad:(UIWebView *)webView
+{
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+}
+
+- (void)webView:(UIWebView *)webview didFailLoadWithError:(NSError *)error
+{
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+    NSString *errormsg = [NSString stringWithFormat:@"<html><center><font size=+7 color='red'>An error occured :<br>%@</font></center></html>", error.localizedDescription];
+    [self.content loadHTMLString:errormsg baseURL:nil];
 }
 
 @end
