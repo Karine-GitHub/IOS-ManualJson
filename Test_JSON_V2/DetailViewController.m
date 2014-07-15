@@ -11,6 +11,11 @@
 @interface DetailViewController ()
 @property (strong, nonatomic) UIPopoverController *masterPopoverController;
 - (void)configureView;
+//javascript & css files
+@property NSString *jqueryFile;
+@property NSString *jqueryUIFile;
+@property NSString *jqueryMobileFile;
+@property NSString *jqueryMobileCSSFile;
 @end
 
 @implementation DetailViewController
@@ -28,7 +33,7 @@
     
     if (self.masterPopoverController != nil) {
         [self.masterPopoverController dismissPopoverAnimated:YES];
-    }        
+    }
 }
 
 - (void)configureView
@@ -57,6 +62,7 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+    [self.content setDelegate:self];
     [self configureView];
 }
 
@@ -91,6 +97,29 @@
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+    
+    [webView stringByEvaluatingJavaScriptFromString:@"var script = document.createElement('script');"
+                        "script.type = 'text/javascript';"
+                        "script.src = 'http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js';"
+                        "document.getElementsByTagName('head')[0].appendChild(script);"];
+    
+    [webView stringByEvaluatingJavaScriptFromString:@"document.createElement('script');"
+                        "script.type = 'text/javascript';"
+                        "script.src = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js';"
+                        "document.getElementsByTagName('head')[0].appendChild(script);"];
+    
+    
+    [webView stringByEvaluatingJavaScriptFromString:@"var script = document.createElement('script');"
+                        "script.type = 'text/javascript';"
+                        "script.src = 'http://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.3/jquery.mobile.min.js';"
+                        "document.getElementsByTagName('head')[0].appendChild(script);"];
+    
+    [webView stringByEvaluatingJavaScriptFromString:@"var link = document.createElement('link');"
+                        "link.type = 'text/css';"
+                        "link.rel = 'stylesheet';"
+                        "link.href = 'http://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.3/jquery.mobile.min.css';"
+                        "document.getElementsByTagName('head')[0].appendChild(link);"];
+
 }
 
 - (void)webView:(UIWebView *)webview didFailLoadWithError:(NSError *)error
