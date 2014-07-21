@@ -8,10 +8,10 @@
 
 #import "MasterViewController.h"
 
+#import "AppDelegate.h"
 #import "DetailViewController.h"
 
 @interface MasterViewController () {
-    NSMutableArray *JSONfile;
     NSMutableDictionary *application;
     NSMutableArray *allPages;
     NSMutableDictionary *page;
@@ -38,33 +38,20 @@
     // Read Json file
     NSError *error = [[NSError alloc] init];
     
-#pragma Network File
-    // Read Json file in network
-    //NSURL *url = [NSURL URLWithString:@"http://localhost:1130/api"];
-    //NSData *fileByWeb = [NSData dataWithContentsOfURL:url options:NSDataReadingMappedIfSafe error:&error];
-    
-    //JSONfile = (NSMutableArray *)[NSJSONSerialization JSONObjectWithData:fileByWeb options:NSJSONReadingMutableLeaves error:&error];
-    
 #pragma Local File
     // Read Json file in local
-    NSFileManager *fm;
-    fm = [NSFileManager defaultManager];
-    NSString *mydirectory = @"/Users/Karine/Projects/Test_Json/";
-    
-    [fm changeCurrentDirectoryPath:mydirectory];
-    // Get its content
-    NSData *file = [fm contentsAtPath:[NSString stringWithFormat:@"%@%@", mydirectory, @"APIapplication.json"]];
-    
-    JSONfile = (NSMutableArray *)[NSJSONSerialization JSONObjectWithData:file options:NSJSONReadingMutableLeaves error:&error];
+//    NSFileManager *fm;
+//    fm = [NSFileManager defaultManager];
+//    NSString *path = [NSString stringWithFormat:@"%@/Library/Application Support/myApplication.json", NSHomeDirectory()];
+//    NSData *file = [fm contentsAtPath:path];
+    application = (NSMutableDictionary *)[NSJSONSerialization JSONObjectWithData:APPLICATION_FILE options:NSJSONReadingMutableLeaves error:&error];
 
-#pragma Manual Parsing of Json File
-    // Keep only the first application
-    application = JSONfile[0];
+#pragma Manual Parsing of Application File
+
     for (NSString *s in application.allKeys)
     {
         NSLog(@"%@", s);
     }
-    
     // Get all pages of the application
     // Objective-C interprets the string <null> as a NSNull object. Exception is throw when it is used in a method
     if ([[application objectForKey:@"Pages"] isKindOfClass:[NSNull class]]) {

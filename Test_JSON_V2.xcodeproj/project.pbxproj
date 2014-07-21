@@ -7,12 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		84BA9805197D416C0005EA22 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 84E30EC1196E6271000D40A2 /* AppDelegate.m */; };
+		84BA980C197D62800005EA22 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 84BA980B197D62800005EA22 /* main.m */; };
 		84E30EB2196E6271000D40A2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84E30EB1196E6271000D40A2 /* Foundation.framework */; };
 		84E30EB4196E6271000D40A2 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84E30EB3196E6271000D40A2 /* CoreGraphics.framework */; };
 		84E30EB6196E6271000D40A2 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84E30EB5196E6271000D40A2 /* UIKit.framework */; };
 		84E30EBC196E6271000D40A2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 84E30EBA196E6271000D40A2 /* InfoPlist.strings */; };
-		84E30EBE196E6271000D40A2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 84E30EBD196E6271000D40A2 /* main.m */; };
-		84E30EC2196E6271000D40A2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 84E30EC1196E6271000D40A2 /* AppDelegate.m */; };
 		84E30EC5196E6271000D40A2 /* Main_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 84E30EC3196E6271000D40A2 /* Main_iPhone.storyboard */; };
 		84E30EC8196E6271000D40A2 /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 84E30EC6196E6271000D40A2 /* Main_iPad.storyboard */; };
 		84E30ECB196E6271000D40A2 /* MasterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 84E30ECA196E6271000D40A2 /* MasterViewController.m */; };
@@ -36,13 +36,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		84BA980B197D62800005EA22 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		84E30EAE196E6271000D40A2 /* Test_JSON_V2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Test_JSON_V2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		84E30EB1196E6271000D40A2 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		84E30EB3196E6271000D40A2 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		84E30EB5196E6271000D40A2 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		84E30EB9196E6271000D40A2 /* Test_JSON_V2-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Test_JSON_V2-Info.plist"; sourceTree = "<group>"; };
 		84E30EBB196E6271000D40A2 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		84E30EBD196E6271000D40A2 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		84E30EBF196E6271000D40A2 /* Test_JSON_V2-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Test_JSON_V2-Prefix.pch"; sourceTree = "<group>"; };
 		84E30EC0196E6271000D40A2 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		84E30EC1196E6271000D40A2 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -134,9 +134,9 @@
 		84E30EB8196E6271000D40A2 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				84BA980B197D62800005EA22 /* main.m */,
 				84E30EB9196E6271000D40A2 /* Test_JSON_V2-Info.plist */,
 				84E30EBA196E6271000D40A2 /* InfoPlist.strings */,
-				84E30EBD196E6271000D40A2 /* main.m */,
 				84E30EBF196E6271000D40A2 /* Test_JSON_V2-Prefix.pch */,
 			);
 			name = "Supporting Files";
@@ -212,7 +212,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 84E30EA9196E6271000D40A2 /* Build configuration list for PBXProject "VsMobile_Manual" */;
+			buildConfigurationList = 84E30EA9196E6271000D40A2 /* Build configuration list for PBXProject "Test_JSON_V2" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -258,9 +258,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				84E30EC2196E6271000D40A2 /* AppDelegate.m in Sources */,
+				84BA9805197D416C0005EA22 /* AppDelegate.m in Sources */,
 				84E30ECB196E6271000D40A2 /* MasterViewController.m in Sources */,
-				84E30EBE196E6271000D40A2 /* main.m in Sources */,
+				84BA980C197D62800005EA22 /* main.m in Sources */,
 				84E30ECE196E6271000D40A2 /* DetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -400,6 +400,7 @@
 				GCC_PREFIX_HEADER = "Test_JSON_V2/Test_JSON_V2-Prefix.pch";
 				INFOPLIST_FILE = "Test_JSON_V2/Test_JSON_V2-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -413,6 +414,7 @@
 				GCC_PREFIX_HEADER = "Test_JSON_V2/Test_JSON_V2-Prefix.pch";
 				INFOPLIST_FILE = "Test_JSON_V2/Test_JSON_V2-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -460,7 +462,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		84E30EA9196E6271000D40A2 /* Build configuration list for PBXProject "VsMobile_Manual" */ = {
+		84E30EA9196E6271000D40A2 /* Build configuration list for PBXProject "Test_JSON_V2" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				84E30EE4196E6271000D40A2 /* Debug */,
