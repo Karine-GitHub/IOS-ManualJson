@@ -400,6 +400,7 @@
 				GCC_PREFIX_HEADER = "Test_JSON_V2/Test_JSON_V2-Prefix.pch";
 				INFOPLIST_FILE = "Test_JSON_V2/Test_JSON_V2-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = app;
 			};
@@ -414,6 +415,7 @@
 				GCC_PREFIX_HEADER = "Test_JSON_V2/Test_JSON_V2-Prefix.pch";
 				INFOPLIST_FILE = "Test_JSON_V2/Test_JSON_V2-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = app;
 			};

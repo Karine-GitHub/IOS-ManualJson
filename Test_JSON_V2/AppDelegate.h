@@ -8,15 +8,18 @@
 
 #import <UIKit/UIKit.h>
 
+// GLOBAL VARIABLES json files
+extern NSData *APPLICATION_FILE;
+extern NSData *FEED_FILE;
+// END GLOBAL VARIABLES
+
+extern NSString *APPLICATION_SUPPORT_PATH;
+
+
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
-//javascript & css files
-extern NSData *const JQUERY_FILE;
-extern NSData *const JQUERYUI_FILE;
-extern NSData *const JQUERY_MOBILE_FILE;
-extern NSData *const JQUERY_MOBILE_CSS_FILE;
 
-extern NSData *const APPLICATION_FILE;
-extern NSData *const FEED_FILE;
 @end
+
+

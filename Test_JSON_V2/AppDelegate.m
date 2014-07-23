@@ -8,6 +8,9 @@
 
 #import "AppDelegate.h"
 
+NSData *APPLICATION_FILE;
+NSData *FEED_FILE;
+NSString *APPLICATION_SUPPORT_PATH;
 
 @implementation AppDelegate
 
@@ -19,53 +22,69 @@
         UINavigationController *navigationController = [splitViewController.viewControllers lastObject];
         splitViewController.delegate = (id)navigationController.topViewController;
     }
-
-#pragma Download & save javascript & css files
     
-    NSError *error = [[NSError alloc] init];
-
+#pragma Create the Application Support Folder. Not accessible by users
+    // NSHomeDirectory returns the application's sandbox directory. Application Support folder will contain all files that we need for the application
+    APPLICATION_SUPPORT_PATH = [NSString stringWithFormat:@"%@/Library/Application Support/", NSHomeDirectory()];
+    NSLog(@"APPLICATION_SUPPORT_PATH = %@", APPLICATION_SUPPORT_PATH);
+    
+    // Application Support folder is not always created by default. The following code creates it.
     // Get the Bundle identifier for creating dynamic path for storing all files
     NSString *bundle = [[NSBundle mainBundle] bundleIdentifier];
-    // NSHomeDirectory returns the application's sandbox directory
     // FileManager is using for creating the Application Support Folder
     NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *error = [[NSError alloc] init];
     NSURL *appliSupportDir = [fileManager URLForDirectory:NSApplicationSupportDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:YES error:&error];
     [appliSupportDir URLByAppendingPathComponent:bundle isDirectory:YES];
     
-    // Get jquery files in network
+#pragma Download & save javascript & css files
     NSURL *url = [NSURL URLWithString:@"http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"];
-    NSString *path = [NSString stringWithFormat:@"%@/Library/Application Support/jquery.js", NSHomeDirectory()];
-    NSData *const JQUERY_FILE = [NSData dataWithContentsOfURL:url];
-    [JQUERY_FILE writeToFile:path options:NSDataWritingAtomic error:&error];
-    
+    NSString *path = [NSString stringWithFormat:@"%@jquery.js", APPLICATION_SUPPORT_PATH];
+    if (![fileManager fileExistsAtPath:path]) {
+        [[NSData dataWithContentsOfURL:url] writeToFile:path options:NSDataWritingAtomic error:&error];
+    }
+    // JqueryUI
     url = [NSURL URLWithString:@"http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"];
-    path = [NSString stringWithFormat:@"%@/Library/Application Support/jqueryUI.js", NSHomeDirectory()];
-    NSData *const JQUERYUI_FILE = [NSData dataWithContentsOfURL:url];
-    [JQUERYUI_FILE writeToFile:path options:NSDataWritingAtomic error:&error];
-    
+    path = [NSString stringWithFormat:@"%@jqueryUI.js", APPLICATION_SUPPORT_PATH];
+    if (![fileManager fileExistsAtPath:path]) {
+        [[NSData dataWithContentsOfURL:url] writeToFile:path options:NSDataWritingAtomic error:&error];
+    }
+    //Jquery Mobile (js & css)
     url = [NSURL URLWithString:@"http://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.3/jquery.mobile.min.js"];
-    path = [NSString stringWithFormat:@"%@/Library/Application Support/jqueryMobile.js", NSHomeDirectory()];
-    NSData *const JQUERY_MOBILE_FILE = [NSData dataWithContentsOfURL:url];
-    [JQUERY_MOBILE_FILE writeToFile:path options:NSDataWritingAtomic error:&error];
-    
-    url = [NSURL URLWithString:@"http://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.3/jquery.mobile.min.css"];
-    path = [NSString stringWithFormat:@"%@/Library/Application Support/jqueryMobileCSS.css", NSHomeDirectory()];
-    NSData *const JQUERY_MOBILE_CSS_FILE = [NSData dataWithContentsOfURL:url];
-    [JQUERY_MOBILE_CSS_FILE writeToFile:path options:NSDataWritingAtomic error:&error];
+    path = [NSString stringWithFormat:@"%@jqueryMobile.js", APPLICATION_SUPPORT_PATH];
+    if (![fileManager fileExistsAtPath:path]) {
 
+        [[NSData dataWithContentsOfURL:url] writeToFile:path options:NSDataWritingAtomic error:&error];
+    }
+    url = [NSURL URLWithString:@"http://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.3/jquery.mobile.min.css"];
+    path = [NSString stringWithFormat:@"%@jqueryMobileCSS.css", APPLICATION_SUPPORT_PATH];
+    if (![fileManager fileExistsAtPath:path]) {
+        [[NSData dataWithContentsOfURL:url] writeToFile:path options:NSDataWritingAtomic error:&error];
+    }
     
 #pragma Download & save Json Files
     // Read Json file in network. WARNING : ID EN DUR !!
     // Get Application File
     url = [NSURL URLWithString:@"http://testapp.visionit.lan:8087/api/application/79e45c6e-9e87-4576-b028-609ae2902f00"];
-    path = [NSString stringWithFormat:@"%@/Library/Application Support/myApplication.json", NSHomeDirectory()];
-    NSData *const APPLICATION_FILE = [NSData dataWithContentsOfURL:url];
-    [APPLICATION_FILE writeToFile:path options:NSDataWritingAtomic error:&error];
+    path = [NSString stringWithFormat:@"%@myApplication.json", APPLICATION_SUPPORT_PATH];
+    if (![fileManager fileExistsAtPath:path]) {
+        APPLICATION_FILE = [NSData dataWithContentsOfURL:url];
+        [[NSData dataWithContentsOfURL:url] writeToFile:path options:NSDataWritingAtomic error:&error];
+    }
+    else {
+        APPLICATION_FILE = [NSData dataWithContentsOfFile:path options:NSDataReadingMappedIfSafe error:&error];
+    }
     // Get Feed File
     url = [NSURL URLWithString:@"http://testapp.visionit.lan:8087/api/feed/79e45c6e-9e87-4576-b028-609ae2902f00"];
-    path = [NSString stringWithFormat:@"%@/Library/Application Support/myFeed.json", NSHomeDirectory()];
-    NSData *const FEED_FILE = [NSData dataWithContentsOfURL:url];
-    [FEED_FILE writeToFile:path options:NSDataWritingAtomic error:&error];
+    path = [NSString stringWithFormat:@"%@myFeed.json", APPLICATION_SUPPORT_PATH];
+    if (![fileManager fileExistsAtPath:path]) {
+        FEED_FILE = [NSData dataWithContentsOfURL:url];
+        [[NSData dataWithContentsOfURL:url] writeToFile:path options:NSDataWritingAtomic error:&error];
+    }
+    else {
+        FEED_FILE = [NSData dataWithContentsOfFile:path options:NSDataReadingMappedIfSafe error:&error];
+    }
+
     
     return YES;
 }

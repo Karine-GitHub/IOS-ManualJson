@@ -17,10 +17,4 @@
 
 @property (weak, nonatomic) IBOutlet UINavigationItem *navigation;
 
-//javascript & css files
-/*@property NSString *jqueryFile;
-@property NSString *jqueryUIFile;
-@property NSString *jqueryMobileFile;
-@property NSString *jqueryMobileCSSFile;*/
-
 @end

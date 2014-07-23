@@ -35,18 +35,9 @@
     
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
     
-    // Read Json file
+    // Get Application json file
     NSError *error = [[NSError alloc] init];
-    
-#pragma Local File
-    // Read Json file in local
-//    NSFileManager *fm;
-//    fm = [NSFileManager defaultManager];
-//    NSString *path = [NSString stringWithFormat:@"%@/Library/Application Support/myApplication.json", NSHomeDirectory()];
-//    NSData *file = [fm contentsAtPath:path];
     application = (NSMutableDictionary *)[NSJSONSerialization JSONObjectWithData:APPLICATION_FILE options:NSJSONReadingMutableLeaves error:&error];
-
-#pragma Manual Parsing of Application File
 
     for (NSString *s in application.allKeys)
     {
@@ -78,6 +69,7 @@
     if (!page) {
         page = [[NSMutableDictionary alloc] init];
     }
+    // Insert row for each page in the application
     for (NSInteger nbpage=0; nbpage<((allPages.count)); ++nbpage) {
         NSLog(@"%d", nbpage);
 
@@ -154,11 +146,9 @@
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    if ([[segue identifier] isEqualToString:@"showDetail"]) {
-        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        page = allPages[indexPath.row];
-        [[segue destinationViewController] setDetailItem:page];
-    }
+    NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+    page = allPages[indexPath.row];
+    [[segue destinationViewController] setDetailItem:page];
 }
 
 @end
