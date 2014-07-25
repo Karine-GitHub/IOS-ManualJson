@@ -7,6 +7,7 @@
 //
 
 #import "DetailViewController.h"
+#import "AppDelegate.h"
 
 @interface DetailViewController ()
 @property (strong, nonatomic) UIPopoverController *masterPopoverController;
@@ -34,16 +35,15 @@
 - (void)configureView
 {
     // Update the user interface for the detail item.
-    NSString *msg = @"<html><center><font color='blue'>There is no content</font></center></html>";
 
     if (self.detailItem) {
         if ([[self.detailItem objectForKey:@"HtmlContent"] isKindOfClass:[NSNull class]]) {
-            [self.content loadHTMLString:msg baseURL:nil];
+            [self.content loadHTMLString:[self createHTML:@"<center><font color='blue'>There is no content</font></center>"] baseURL:[NSURL fileURLWithPath:APPLICATION_SUPPORT_PATH]];
         }
         else {
-            [self.content loadHTMLString:[self.detailItem objectForKey:@"HtmlContent"] baseURL:nil];            
+            [self.content loadHTMLString:[self createHTML:[self.detailItem objectForKey:@"HtmlContent"]] baseURL:[NSURL fileURLWithPath:APPLICATION_SUPPORT_PATH]];
         }
-
+        
         if ([[self.detailItem objectForKey:@"Name"] isKindOfClass:[NSNull class]]) {
             self.navigationItem.title = @"No Name property";
         }
@@ -70,7 +70,13 @@
 
 - (void)splitViewController:(UISplitViewController *)splitController willHideViewController:(UIViewController *)viewController withBarButtonItem:(UIBarButtonItem *)barButtonItem forPopoverController:(UIPopoverController *)popoverController
 {
-    barButtonItem.title = NSLocalizedString(@"Master", @"Master");
+    //barButtonItem.title = NSLocalizedString(@"Master", @"Master");
+    if ([[self.detailItem objectForKey:@"Name"] isKindOfClass:[NSNull class]]) {
+        barButtonItem.title = @"No Name property";
+    }
+    else {
+        barButtonItem.title = [self.detailItem objectForKey:@"Name"];
+    }
     [self.navigationItem setLeftBarButtonItem:barButtonItem animated:YES];
     self.masterPopoverController = popoverController;
 }
@@ -96,8 +102,29 @@
 - (void)webView:(UIWebView *)webview didFailLoadWithError:(NSError *)error
 {
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-    NSString *errormsg = [NSString stringWithFormat:@"<html><center><font size=+7 color='red'>An error occured :<br>%@</font></center></html>", error.localizedDescription];
-    [self.content loadHTMLString:errormsg baseURL:nil];
+    NSString *errormsg = [NSString stringWithFormat:@"<html><center><font size=+4 color='red'>An error occured :<br>%@</font></center></html>", error.localizedDescription];
+    [self.content loadHTMLString:[self createHTML:errormsg] baseURL:nil];
+}
+
+- (NSString *)createHTML:(NSString *)htmlContent
+{
+    NSString *html = [NSString stringWithFormat:@"<!DOCTYPE>"
+                      "<html>"
+                      "<head>"
+                      "<link type='text/css' rel='stylesheet' href='jqueryMobileCSS.css'></link>"
+                      "<script src='jquery.js' type='text/javascript'></script>"
+                      "<script src='jqueryUI.js' type='text/javascript'></script>"
+                      "<script src='jqueryMobile.js' type='text/javascript'></script>"
+                      "</head>"
+                      "<body>"
+                      "<div id='Main' style='padding:10px;'>"
+                      "%@"
+                      "</body>"
+                      "</head>"
+                      "</html>"
+                      , htmlContent];
+    
+    return html;
 }
 
 @end

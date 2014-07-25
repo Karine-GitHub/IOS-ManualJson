@@ -8,8 +8,22 @@
 
 #import <UIKit/UIKit.h>
 
+// GLOBAL VARIABLES json files
+extern NSData *APPLICATION_FILE;
+extern NSData *FEED_FILE;
+// END GLOBAL VARIABLES
+
+extern NSString *APPLICATION_SUPPORT_PATH;
+
+
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
+@property (strong, nonatomic) NSMutableDictionary *application;
+@property (strong, nonatomic) NSMutableArray *allPages;
+@property (strong, nonatomic) NSMutableArray *allDependenciesApp;
+@property (strong, nonatomic) NSMutableArray *allDependenciesPage;
 
 @end
+
+
