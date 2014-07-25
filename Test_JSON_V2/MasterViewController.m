@@ -51,7 +51,7 @@
         allPages = [application objectForKey:@"Pages"];
     }
     
-    NSLog(@"%d", allPages.count);
+    NSLog(@"All Pages Count = %d", allPages.count);
     self.navigationItem.title = [application objectForKey:@"Name"];
     
     // Insert rows in TableView
