@@ -36,8 +36,17 @@
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
     
     // Get Application json file
-    NSError *error = [[NSError alloc] init];
-    application = (NSMutableDictionary *)[NSJSONSerialization JSONObjectWithData:APPLICATION_FILE options:NSJSONReadingMutableLeaves error:&error];
+    
+    @try {
+        NSError *error = [[NSError alloc] init];
+        application = (NSMutableDictionary *)[NSJSONSerialization JSONObjectWithData:APPLICATION_FILE options:NSJSONReadingMutableLeaves error:&error];
+        if (!application) {
+            NSLog(@"An error occured during the Loading of the Application : %@", error);
+        }
+    }
+    @catch (NSException *exception) {
+        NSLog(@"An error occured during the Loading of the Application : %@, reason : %@", exception.name, exception.reason);
+    }
 
     for (NSString *s in application.allKeys)
     {
@@ -45,14 +54,15 @@
     }
     // Get all pages of the application
     // Objective-C interprets the string <null> as a NSNull object. Exception is throw when it is used in a method
-    if ([[application objectForKey:@"Pages"] isKindOfClass:[NSNull class]]) {
-        allPages = nil;
-    } else {
+    if ([application objectForKey:@"Pages"]) {
         allPages = [application objectForKey:@"Pages"];
     }
     
     NSLog(@"All Pages Count = %d", allPages.count);
-    self.navigationItem.title = [application objectForKey:@"Name"];
+    if ([application objectForKey:@"Name"]) {
+        self.navigationItem.title = [application objectForKey:@"Name"];
+    }
+    
     
     // Insert rows in TableView
     [self insertNewObject];
@@ -64,15 +74,10 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)insertNewObject//:(id)sender
+- (void)insertNewObject
 {
-    if (!page) {
-        page = [[NSMutableDictionary alloc] init];
-    }
     // Insert row for each page in the application
-    for (NSInteger nbpage=0; nbpage<((allPages.count)); ++nbpage) {
-        NSLog(@"%d", nbpage);
-
+    for (NSInteger nbpage=0; nbpage < allPages.count; ++nbpage) {
         NSIndexPath *indexPathTable = [NSIndexPath indexPathForRow:0 inSection:0];
         [self.tableView insertRowsAtIndexPaths:@[indexPathTable] withRowAnimation:UITableViewRowAnimationAutomatic];
     }
@@ -96,7 +101,7 @@
 
     page = allPages[indexPath.row];
     
-    if ([[page objectForKey:@"Name"] isKindOfClass:[NSNull class]]) {
+    if (![page objectForKey:@"Name"]) {
         cell.textLabel.text = @"No Name property";
     } else {
         cell.textLabel.text = [[page objectForKey:@"Name"] description];

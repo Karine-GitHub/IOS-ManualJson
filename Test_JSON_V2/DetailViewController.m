@@ -37,20 +37,110 @@
     // Update the user interface for the detail item.
 
     if (self.detailItem) {
-        if ([[self.detailItem objectForKey:@"HtmlContent"] isKindOfClass:[NSNull class]]) {
+        // Get Page's Dependencies
+        /*
+        if ([self.detailItem objectForKey:@"Dependencies"]) {
+            self.pageDependencies = [self.detailItem objectForKey:@"Dependencies"];
+        }
+         */
+        // Get Application's Dependencies
+        NSError *error = [[NSError alloc] init];
+        self.application = (NSMutableDictionary *)[NSJSONSerialization JSONObjectWithData:APPLICATION_FILE options:NSJSONReadingMutableLeaves error:&error];
+        if (!self.application) {
+            NSLog(@"An error occured during the Deserialization of Application file : %@", error);
+        }
+        else {
+            if ([self.application objectForKey:@"Dependencies"]) {
+                self.appDependencies = [self.application objectForKey:@"Dependencies"];
+            }
+        }
+        // Load Content in the WebView
+        if (![self.detailItem objectForKey:@"HtmlContent"]) {
             [self.content loadHTMLString:[self createHTML:@"<center><font color='blue'>There is no content</font></center>"] baseURL:[NSURL fileURLWithPath:APPLICATION_SUPPORT_PATH]];
         }
         else {
             [self.content loadHTMLString:[self createHTML:[self.detailItem objectForKey:@"HtmlContent"]] baseURL:[NSURL fileURLWithPath:APPLICATION_SUPPORT_PATH]];
         }
-        
-        if ([[self.detailItem objectForKey:@"Name"] isKindOfClass:[NSNull class]]) {
+        // Set Page's title
+        if (![self.detailItem objectForKey:@"Name"]) {
             self.navigationItem.title = @"No Name property";
         }
         else {
             self.navigationItem.title = [self.detailItem objectForKey:@"Name"];
         }
+        
     }
+}
+
+- (NSMutableString *) addFiles
+{
+    NSMutableString *files;
+    
+    if (self.pageDependencies) {
+        for (NSMutableDictionary *pageDep in self.pageDependencies) {
+            if ([pageDep objectForKey:@"Name"]) {
+                if ([[pageDep objectForKey:@"Type"] isEqualToString:@"script"]) {
+                    NSString *fileName = [NSString stringWithFormat:@"%@.%@", [pageDep objectForKey:@"Name"], [AppDelegate extensionType:[pageDep objectForKey:@"Type"]]];
+                    NSString *add = [NSString stringWithFormat:@"<script src='%@' type='text/javascript'></script>", fileName];
+                    if (files) {
+                        files = [NSMutableString stringWithFormat:@"%@%@", files, add];
+                    } else {
+                        files = (NSMutableString *)[NSString stringWithString:add];
+                    }
+                    
+                }
+                if ([[pageDep objectForKey:@"Type"] isEqualToString:@"style"]) {
+                    NSString *fileName = [NSString stringWithFormat:@"%@.%@", [pageDep objectForKey:@"Name"], [AppDelegate extensionType:[pageDep objectForKey:@"Type"]]];
+                    NSString *add = [NSString stringWithFormat:@"<link type='text/css' rel='stylesheet' href='%@'></link>", fileName];
+                    if (files) {
+                        files = [NSMutableString stringWithFormat:@"%@%@", files, add];
+                    } else {
+                        files = (NSMutableString *)[NSString stringWithString:add];
+                    }
+                }
+            }
+        }
+    }
+    if (self.appDependencies) {
+        for (NSMutableDictionary *appDep in self.appDependencies) {
+            if ([appDep objectForKey:@"Name"]) {
+                if ([[appDep objectForKey:@"Type"] isEqualToString:@"script"]) {
+                    NSString *fileName = [NSString stringWithFormat:@"%@.%@", [appDep objectForKey:@"Name"], [AppDelegate extensionType:[appDep objectForKey:@"Type"]]];
+                    NSString *add = [NSString stringWithFormat:@"<script src='%@' type='text/javascript'></script>", fileName];
+                    if (files) {
+                        files = [NSMutableString stringWithFormat:@"%@%@", files, add];
+                    } else {
+                        files = (NSMutableString *)[NSString stringWithString:add];
+                    }
+                }
+                if ([[appDep objectForKey:@"Type"] isEqualToString:@"style"]) {
+                    NSString *fileName = [NSString stringWithFormat:@"%@.%@", [appDep objectForKey:@"Name"], [AppDelegate extensionType:[appDep objectForKey:@"Type"]]];
+                    NSString *add = [NSString stringWithFormat:@"<link type='text/css' rel='stylesheet' href='%@'></link>", fileName];
+                    if (files) {
+                        files = [NSMutableString stringWithFormat:@"%@%@", files, add];
+                    } else {
+                        files = (NSMutableString *)[NSString stringWithString:add];
+                    }
+                }
+            }
+        }
+    }
+    NSLog(@"My final string = %@", files);
+    return files;
+}
+
+- (NSString *) extensionType:(NSString *)type {
+    NSString *mimeType;
+    if ([type isEqualToString:@"script"]) {
+        mimeType = @"js";
+    }
+    else if ([type isEqualToString:@"script"]) {
+        mimeType = @"css";
+    }
+    else {
+        mimeType = nil;
+    }
+    return mimeType;
 }
 
 - (void)viewDidLoad
@@ -71,7 +161,7 @@
 - (void)splitViewController:(UISplitViewController *)splitController willHideViewController:(UIViewController *)viewController withBarButtonItem:(UIBarButtonItem *)barButtonItem forPopoverController:(UIPopoverController *)popoverController
 {
     //barButtonItem.title = NSLocalizedString(@"Master", @"Master");
-    if ([[self.detailItem objectForKey:@"Name"] isKindOfClass:[NSNull class]]) {
+    if (![self.detailItem objectForKey:@"Name"]) {
         barButtonItem.title = @"No Name property";
     }
     else {
@@ -111,10 +201,7 @@
     NSString *html = [NSString stringWithFormat:@"<!DOCTYPE>"
                       "<html>"
                       "<head>"
-                      "<link type='text/css' rel='stylesheet' href='jqueryMobileCSS.css'></link>"
-                      "<script src='jquery.js' type='text/javascript'></script>"
-                      "<script src='jqueryUI.js' type='text/javascript'></script>"
-                      "<script src='jqueryMobile.js' type='text/javascript'></script>"
+                      "%@"
                       "</head>"
                       "<body>"
                       "<div id='Main' style='padding:10px;'>"
@@ -122,7 +209,7 @@
                       "</body>"
                       "</head>"
                       "</html>"
-                      , htmlContent];
+                      , [self addFiles], htmlContent];
     
     return html;
 }

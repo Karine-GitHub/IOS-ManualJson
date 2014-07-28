@@ -20,9 +20,9 @@ extern NSString *APPLICATION_SUPPORT_PATH;
 
 @property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) NSMutableDictionary *application;
-@property (strong, nonatomic) NSMutableArray *allPages;
-@property (strong, nonatomic) NSMutableArray *allDependenciesApp;
-@property (strong, nonatomic) NSMutableArray *allDependenciesPage;
+
+
++ (NSString *) extensionType:(NSString *)type;
 
 @end
 

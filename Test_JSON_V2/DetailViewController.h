@@ -14,7 +14,12 @@
 @property (strong, nonatomic) id detailItem;
 
 @property (weak, nonatomic) IBOutlet UIWebView *content;
-
 @property (weak, nonatomic) IBOutlet UINavigationItem *navigation;
+
+@property (strong, nonatomic) NSMutableDictionary *application;
+@property (strong, nonatomic) NSMutableArray *appDependencies;
+@property (strong, nonatomic) NSMutableArray *pageDependencies;
+
+- (NSString *) extensionType:(NSString *)type;
 
 @end

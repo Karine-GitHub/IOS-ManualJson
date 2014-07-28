@@ -14,28 +14,26 @@ NSString *APPLICATION_SUPPORT_PATH;
 
 @implementation AppDelegate
 
-- (void) loadFile:(NSString *)url fileName:(NSString *)fileName extensionType:(NSString *)extensionType
+- (void) saveFile:(NSString *)url fileName:(NSString *)fileName extensionType:(NSString *)extensionType
 {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSError *error = [[NSError alloc] init];
     BOOL success = false;
-    NSString *extension;
+    url = [url stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     
-    if ([extensionType isEqualToString:@"script"]) {
-        extension = @"js";
-    }
-    else
-    {
-        extension = @"css";
-    }
     @try {
-        NSURL *location = [NSURL URLWithString:url];
-        NSString *path = [NSString stringWithFormat:@"%@%@.%@", APPLICATION_SUPPORT_PATH, fileName, extension];
-        if (![fileManager fileExistsAtPath:path]) {
-            success =[[NSData dataWithContentsOfURL:location] writeToFile:path options:NSDataWritingAtomic error:&error];
+        if ([AppDelegate extensionType:extensionType]) {
+            NSURL *location = [NSURL URLWithString:url];
+            NSString *path = [NSString stringWithFormat:@"%@%@.%@", APPLICATION_SUPPORT_PATH, fileName, [AppDelegate extensionType:extensionType]];
+            if (![fileManager fileExistsAtPath:path]) {
+                success =[[NSData dataWithContentsOfURL:location] writeToFile:path options:NSDataWritingAtomic error:&error];
+                if (!success) {
+                    NSLog(@"An error occured during the Saving of the file %@ : %@", fileName, error);
+                }
+            }
         }
-        if (!success) {
-            NSLog(@"An error occured during the Saving of the file %@ : %@", fileName, error);
+        else {
+            NSLog(@"An error occured during the Saving of the file %@ : the extension %@ is not supported yet !", fileName, extensionType);
         }
     }
     @catch (NSException *exception) {
@@ -43,43 +41,47 @@ NSString *APPLICATION_SUPPORT_PATH;
     }
 }
 
-- (void)loadPages
+- (void) searchDependencies
 {
-    // Get all pages of the application
-    if (!self.allPages) {
-        self.allPages = [[NSMutableArray alloc] init];
+    // TODO : Decomment when API will return Controllers
+    if ([self.application objectForKey:@"Dependencies"]) {
+        for (NSMutableDictionary *allPages in [self.application objectForKey:@"Pages"]) {
+            for (NSMutableDictionary *allPageDep in [allPages objectForKey:@"Dependencies"]) {
+                if ([allPageDep objectForKey:@"Url"] && [allPageDep objectForKey:@"Name"] && [allPageDep objectForKey:@"Type"]) {
+                    [self saveFile:[allPageDep objectForKey:@"Url"] fileName:[allPageDep objectForKey:@"Name"] extensionType:[allPageDep objectForKey:@"Type"]];
+                }
+                else {
+                    NSLog(@"An error occured during the Search of %@'s dependencies : one or more parameters are null !", [allPages objectForKey:@"Name"]);
+                }
+            }
+        }
     }
-    if ([[self.application objectForKey:@"Pages"] isKindOfClass:[NSNull class]]) {
-        self.allPages = nil;
-    } else {
-        self.allPages = [self.application objectForKey:@"Pages"];
-    }
-    
-    for (NSMutableDictionary *mdPage in self.allPages) {
-        NSMutableArray *pagesDependencies = [mdPage objectForKey:@"Dependencies"];
-        for (NSMutableDictionary *md in pagesDependencies) {
-            [self loadFile:[md objectForKey:@"Url"] fileName:[md objectForKey:@"Name"] extensionType:[md objectForKey:@"Type"]];
+    if ([self.application objectForKey:@"Dependencies"]) {
+        for (NSMutableDictionary *allAppDep in [self.application objectForKey:@"Dependencies"]) {
+            if ([allAppDep objectForKey:@"Url"] && [allAppDep objectForKey:@"Name"] && [allAppDep objectForKey:@"Type"]) {
+                [self saveFile:[allAppDep objectForKey:@"Url"] fileName:[allAppDep objectForKey:@"Name"] extensionType:[allAppDep objectForKey:@"Type"]];
+            }
+            else {
+                NSLog(@"An error occured during the Search of Application's dependencies. For %@ : one or more parameters are null !", [allAppDep objectForKey:@"Name"]);
+            }
         }
     }
     
 }
 
-- (void)loadDependenciesApplication
++ (NSString *) extensionType:(NSString *)type
 {
-    // Get all pages of the application
-    if (!self.allDependenciesApp) {
-        self.allDependenciesApp = [[NSMutableArray alloc] init];
+    NSString *extension;
+    if ([type isEqualToString:@"script"]) {
+        extension = @"js";
     }
-    // Objective-C interprets the string <null> as a NSNull object. Exception is throw when it is used in a method
-    if ([[self.application objectForKey:@"Pages"] isKindOfClass:[NSNull class]]) {
-        self.allDependenciesApp = nil;
-    } else {
-        self.allDependenciesApp = [self.application objectForKey:@"Dependencies"];
+    else if ([type isEqualToString:@"style"]) {
+        extension = @"css";
     }
-    
-    for (NSMutableDictionary *md in self.allDependenciesApp) {
-        [self loadFile:[md objectForKey:@"Url"] fileName:[md objectForKey:@"Name"] extensionType:[md objectForKey:@"Type"]];
+    else {
+        extension = nil;
     }
+    return extension;
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -103,34 +105,62 @@ NSString *APPLICATION_SUPPORT_PATH;
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSError *error = [[NSError alloc] init];
     NSURL *appliSupportDir = [fileManager URLForDirectory:NSApplicationSupportDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:YES error:&error];
-    [appliSupportDir URLByAppendingPathComponent:bundle isDirectory:YES];
+    if (appliSupportDir) {
+        [appliSupportDir URLByAppendingPathComponent:bundle isDirectory:YES];
+    }
+    else {
+        NSLog(@"An error occured during the Creation of Application Support folder : %@", error);
+    }
     
 #pragma Download & save Json Files
     // Read Json file in network. WARNING : ID EN DUR !!
-    // Get Application File
-    NSURL *url =  [NSURL URLWithString:@"http://testapp.visionit.lan:8087/api/application/79e45c6e-9e87-4576-b028-609ae2902f00"];
-    NSString *path = [NSString stringWithFormat:@"%@myApplication.json", APPLICATION_SUPPORT_PATH];
-    if (![fileManager fileExistsAtPath:path]) {
-        APPLICATION_FILE = [NSData dataWithContentsOfURL:url];
-        [[NSData dataWithContentsOfURL:url] writeToFile:path options:NSDataWritingAtomic error:&error];
+    @try {
+        BOOL success = false;
+        // Get Application File
+        NSURL *url =  [NSURL URLWithString:@"http://testapp.visionit.lan:8087/api/application/79e45c6e-9e87-4576-b028-609ae2902f00"];
+        NSString *path = [NSString stringWithFormat:@"%@myApplication.json", APPLICATION_SUPPORT_PATH];
+        if (![fileManager fileExistsAtPath:path]) {
+            APPLICATION_FILE = [NSData dataWithContentsOfURL:url];
+            success =[[NSData dataWithContentsOfURL:url] writeToFile:path options:NSDataWritingAtomic error:&error];
+            if (!success) {
+                NSLog(@"An error occured during the Saving of Application File : %@", error);
+            }
+        }
+        else {
+            APPLICATION_FILE = [NSData dataWithContentsOfFile:path options:NSDataReadingMappedIfSafe error:&error];
+            if (!APPLICATION_FILE) {
+                NSLog(@"An error occured during the Loading of Application File : %@", error);
+            }
+            else {
+                self.application = (NSMutableDictionary *)[NSJSONSerialization JSONObjectWithData:APPLICATION_FILE options:NSJSONReadingMutableLeaves error:&error];
+                if (!self.application) {
+                    NSLog(@"An error occured during the Deserialization of Application file : %@", error);
+                }
+            }
+        }
+        /* TODO : Decomment when API will return Feed file
+        // Get Feed File
+        url = [NSURL URLWithString:@"http://testapp.visionit.lan:8087/api/feed/79e45c6e-9e87-4576-b028-609ae2902f00"];
+        path = [NSString stringWithFormat:@"%@myFeed.json", APPLICATION_SUPPORT_PATH];
+        if (![fileManager fileExistsAtPath:path]) {
+            FEED_FILE = [NSData dataWithContentsOfURL:url];
+            success = [[NSData dataWithContentsOfURL:url] writeToFile:path options:NSDataWritingAtomic error:&error];
+            if (!success) {
+                NSLog(@"An error occured during the Saving of Feed File : %@", error);
+            }
+        }
+        else {
+            FEED_FILE = [NSData dataWithContentsOfFile:path options:NSDataReadingMappedIfSafe error:&error];
+            if (!FEED_FILE) {
+                NSLog(@"An error occured during the Loading of Feed File : %@", error);
+            }
+        }*/
+                
+        [self searchDependencies];
     }
-    else {
-        APPLICATION_FILE = [NSData dataWithContentsOfFile:path options:NSDataReadingMappedIfSafe error:&error];
+    @catch (NSException *exception) {
+        NSLog(@"An error occured during the Saving of a Json file : %@, reason : %@", exception.name, exception.reason);
     }
-    // Get Feed File
-    url = [NSURL URLWithString:@"http://testapp.visionit.lan:8087/api/feed/79e45c6e-9e87-4576-b028-609ae2902f00"];
-    path = [NSString stringWithFormat:@"%@myFeed.json", APPLICATION_SUPPORT_PATH];
-    if (![fileManager fileExistsAtPath:path]) {
-        FEED_FILE = [NSData dataWithContentsOfURL:url];
-        [[NSData dataWithContentsOfURL:url] writeToFile:path options:NSDataWritingAtomic error:&error];
-    }
-    else {
-        FEED_FILE = [NSData dataWithContentsOfFile:path options:NSDataReadingMappedIfSafe error:&error];
-    }
-
-    self.application = (NSMutableDictionary *)[NSJSONSerialization JSONObjectWithData:APPLICATION_FILE options:NSJSONReadingMutableLeaves error:&error];
-    [self loadPages];
-    [self loadDependenciesApplication];
     
     return YES;
 }
