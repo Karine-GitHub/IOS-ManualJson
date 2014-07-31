@@ -20,6 +20,5 @@
 @property (strong, nonatomic) NSMutableArray *appDependencies;
 @property (strong, nonatomic) NSMutableArray *pageDependencies;
 
-- (NSString *) extensionType:(NSString *)type;
 
 @end

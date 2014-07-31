@@ -26,12 +26,14 @@
         self.clearsSelectionOnViewWillAppear = NO;
         self.preferredContentSize = CGSizeMake(320.0, 600.0);
     }
+    
     [super awakeFromNib];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    NSLog(@"The current device is : %@", [UIDevice currentDevice].model);
     
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
     
@@ -53,7 +55,6 @@
         NSLog(@"%@", s);
     }
     // Get all pages of the application
-    // Objective-C interprets the string <null> as a NSNull object. Exception is throw when it is used in a method
     if ([application objectForKey:@"Pages"]) {
         allPages = [application objectForKey:@"Pages"];
     }
@@ -63,9 +64,14 @@
         self.navigationItem.title = [application objectForKey:@"Name"];
     }
     
-    
     // Insert rows in TableView
     [self insertNewObject];
+
+    // Select row manually for displaying an home page when device = iPad
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        [_menu selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionTop];
+        [_menu.delegate tableView:_menu didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -79,7 +85,7 @@
     // Insert row for each page in the application
     for (NSInteger nbpage=0; nbpage < allPages.count; ++nbpage) {
         NSIndexPath *indexPathTable = [NSIndexPath indexPathForRow:0 inSection:0];
-        [self.tableView insertRowsAtIndexPaths:@[indexPathTable] withRowAnimation:UITableViewRowAnimationAutomatic];
+        [self.menu insertRowsAtIndexPaths:@[indexPathTable] withRowAnimation:UITableViewRowAnimationAutomatic];
     }
 }
 
@@ -145,7 +151,7 @@
 {
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         page = allPages[indexPath.row];
-        self.detailViewController.detailItem = page;
+        [self.detailViewController setDetailItem:page];
     }
 }
 

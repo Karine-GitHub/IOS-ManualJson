@@ -14,27 +14,44 @@ NSString *APPLICATION_SUPPORT_PATH;
 
 @implementation AppDelegate
 
-- (void) saveFile:(NSString *)url fileName:(NSString *)fileName extensionType:(NSString *)extensionType
+// INFO : ExtensionType is necessary when fileName does not contain an extension (i.e. js, css, json, ...)
+- (void) saveFile:(NSString *)url fileName:(NSString *)fileName extensionType:(NSString *)extensionType dirName:(NSString*)dirName
 {
+    url = [url stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    fileName = [fileName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    extensionType = [extensionType stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    BOOL success = false;
+    //NSString *path = [NSString stringWithFormat:@"%@%@.%@", APPLICATION_SUPPORT_PATH, fileName, [AppDelegate extensionType:extensionType]];
+    NSString *path = [NSString stringWithFormat:@"%@%@", APPLICATION_SUPPORT_PATH, fileName];
+    
+    // Create Template's page directory when dependency is for a page
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSError *error = [[NSError alloc] init];
-    BOOL success = false;
-    url = [url stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    
+    if (![dirName isKindOfClass:[NSNull class]]) {
+        dirName = [dirName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        BOOL isDirectory;
+        path = [NSString stringWithFormat:@"%@%@/%@", APPLICATION_SUPPORT_PATH, dirName, fileName];
+        if (![fileManager fileExistsAtPath:[NSString stringWithFormat:@"%@%@", APPLICATION_SUPPORT_PATH, dirName] isDirectory:&isDirectory]) {
+            success = [fileManager createDirectoryAtPath:[NSString stringWithFormat:@"%@%@", APPLICATION_SUPPORT_PATH, dirName] withIntermediateDirectories:YES attributes:nil error:&error];
+            if (!success) {
+                 NSLog(@"An error occured during the Creation of Template folder : %@", error);
+            }
+        }
+    }
+
     @try {
-        if ([AppDelegate extensionType:extensionType]) {
+        //if ([AppDelegate extensionType:extensionType]) {
             NSURL *location = [NSURL URLWithString:url];
-            NSString *path = [NSString stringWithFormat:@"%@%@.%@", APPLICATION_SUPPORT_PATH, fileName, [AppDelegate extensionType:extensionType]];
             if (![fileManager fileExistsAtPath:path]) {
                 success =[[NSData dataWithContentsOfURL:location] writeToFile:path options:NSDataWritingAtomic error:&error];
                 if (!success) {
                     NSLog(@"An error occured during the Saving of the file %@ : %@", fileName, error);
                 }
             }
-        }
-        else {
-            NSLog(@"An error occured during the Saving of the file %@ : the extension %@ is not supported yet !", fileName, extensionType);
-        }
+        //}
+        //else {
+            //NSLog(@"An error occured during the Saving of the file %@ : the extension %@ is not supported yet !", fileName, extensionType);
+        //}
     }
     @catch (NSException *exception) {
         NSLog(@"An error occured during the Loading of the file %@ : %@, reason : %@", fileName, exception.name, exception.reason);
@@ -43,35 +60,46 @@ NSString *APPLICATION_SUPPORT_PATH;
 
 - (void) searchDependencies
 {
-    // TODO : Decomment when API will return Controllers
-    if ([self.application objectForKey:@"Dependencies"]) {
-        for (NSMutableDictionary *allPages in [self.application objectForKey:@"Pages"]) {
-            for (NSMutableDictionary *allPageDep in [allPages objectForKey:@"Dependencies"]) {
-                if ([allPageDep objectForKey:@"Url"] && [allPageDep objectForKey:@"Name"] && [allPageDep objectForKey:@"Type"]) {
-                    [self saveFile:[allPageDep objectForKey:@"Url"] fileName:[allPageDep objectForKey:@"Name"] extensionType:[allPageDep objectForKey:@"Type"]];
+    if (![[self.application objectForKey:@"Dependencies"] isKindOfClass:[NSNull class]]) {
+        if ([self.application objectForKey:@"Dependencies"]) {
+            for (NSMutableDictionary *allAppDep in [self.application objectForKey:@"Dependencies"]) {
+                if ([allAppDep objectForKey:@"Url"] && [allAppDep objectForKey:@"Name"] /*&& [allAppDep objectForKey:@"Type"]*/) {
+                    if ([allAppDep objectForKey:@"Path"]) {
+                        [self saveFile:[allAppDep objectForKey:@"Url"] fileName:[allAppDep objectForKey:@"Name"] extensionType:[allAppDep objectForKey:@"Type"] dirName:[allAppDep objectForKey:@"Path"]];
+                    }
+                    else {
+                        [self saveFile:[allAppDep objectForKey:@"Url"] fileName:[allAppDep objectForKey:@"Name"] extensionType:[allAppDep objectForKey:@"Type"] dirName:nil];
+                    }
                 }
                 else {
-                    NSLog(@"An error occured during the Search of %@'s dependencies : one or more parameters are null !", [allPages objectForKey:@"Name"]);
+                    NSLog(@"An error occured during the Search of Application's dependencies. For %@ : one or more parameters are null !", [allAppDep objectForKey:@"Name"]);
+                }
+            }
+            // INFO : ExtensionType is necessary when fileName does not contain an extension (i.e. js, css, json, ...). That's why it is commented
+            for (NSMutableDictionary *allPages in [self.application objectForKey:@"Pages"]) {
+                for (NSMutableDictionary *allPageDep in [allPages objectForKey:@"Dependencies"]) {
+                    if (![[allPageDep objectForKey:@"Url"] isKindOfClass:[NSNull class]] && ![[allPageDep objectForKey:@"Name"] isKindOfClass:[NSNull class]] /*&& [allPageDep objectForKey:@"Type"]*/) {
+                        if (![[allPageDep objectForKey:@"Path"]  isKindOfClass:[NSNull class]]) {
+                            [self saveFile:[allPageDep objectForKey:@"Url"] fileName:[allPageDep objectForKey:@"Name"] extensionType:[allPageDep objectForKey:@"Type"] dirName:[allPageDep objectForKey:@"Path"]];
+                        }
+                        else {
+                            [self saveFile:[allPageDep objectForKey:@"Url"] fileName:[allPageDep objectForKey:@"Name"] extensionType:[allPageDep objectForKey:@"Type"] dirName:nil];
+                        }
+                    }
+                    else {
+                        NSLog(@"An error occured during the Search of %@'s dependencies : one or more parameters are null !", [allPages objectForKey:@"Name"]);
+                    }
                 }
             }
         }
     }
-    if ([self.application objectForKey:@"Dependencies"]) {
-        for (NSMutableDictionary *allAppDep in [self.application objectForKey:@"Dependencies"]) {
-            if ([allAppDep objectForKey:@"Url"] && [allAppDep objectForKey:@"Name"] && [allAppDep objectForKey:@"Type"]) {
-                [self saveFile:[allAppDep objectForKey:@"Url"] fileName:[allAppDep objectForKey:@"Name"] extensionType:[allAppDep objectForKey:@"Type"]];
-            }
-            else {
-                NSLog(@"An error occured during the Search of Application's dependencies. For %@ : one or more parameters are null !", [allAppDep objectForKey:@"Name"]);
-            }
-        }
-    }
-    
 }
 
 + (NSString *) extensionType:(NSString *)type
 {
     NSString *extension;
+    type = [type stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    [type lowercaseString];
     if ([type isEqualToString:@"script"]) {
         extension = @"js";
     }
@@ -83,6 +111,7 @@ NSString *APPLICATION_SUPPORT_PATH;
     }
     return extension;
 }
+
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -117,8 +146,9 @@ NSString *APPLICATION_SUPPORT_PATH;
     @try {
         BOOL success = false;
         // Get Application File
-        NSURL *url =  [NSURL URLWithString:@"http://testapp.visionit.lan:8087/api/application/79e45c6e-9e87-4576-b028-609ae2902f00"];
-        NSString *path = [NSString stringWithFormat:@"%@myApplication.json", APPLICATION_SUPPORT_PATH];
+        //NSURL *url =  [NSURL URLWithString:@"http://testapp.visionit.lan:8087/api/application/79e45c6e-9e87-4576-b028-609ae2902f00"];
+        NSURL *url = [NSURL URLWithString:@"http://10.1.40.37/vsMobileAPI/api/application/79e45c6e-9e87-4576-b028-609ae2902f00"];
+        NSString *path = [NSString stringWithFormat:@"%@79e45c6e-9e87-4576-b028-609ae2902f00.json", APPLICATION_SUPPORT_PATH];
         if (![fileManager fileExistsAtPath:path]) {
             APPLICATION_FILE = [NSData dataWithContentsOfURL:url];
             success =[[NSData dataWithContentsOfURL:url] writeToFile:path options:NSDataWritingAtomic error:&error];
@@ -131,12 +161,10 @@ NSString *APPLICATION_SUPPORT_PATH;
             if (!APPLICATION_FILE) {
                 NSLog(@"An error occured during the Loading of Application File : %@", error);
             }
-            else {
-                self.application = (NSMutableDictionary *)[NSJSONSerialization JSONObjectWithData:APPLICATION_FILE options:NSJSONReadingMutableLeaves error:&error];
-                if (!self.application) {
-                    NSLog(@"An error occured during the Deserialization of Application file : %@", error);
-                }
-            }
+        }
+        self.application = (NSMutableDictionary *)[NSJSONSerialization JSONObjectWithData:APPLICATION_FILE options:NSJSONReadingMutableLeaves error:&error];
+        if (!self.application) {
+            NSLog(@"An error occured during the Deserialization of Application file : %@", error);
         }
         /* TODO : Decomment when API will return Feed file
         // Get Feed File
@@ -155,7 +183,8 @@ NSString *APPLICATION_SUPPORT_PATH;
                 NSLog(@"An error occured during the Loading of Feed File : %@", error);
             }
         }*/
-                
+        
+        
         [self searchDependencies];
     }
     @catch (NSException *exception) {

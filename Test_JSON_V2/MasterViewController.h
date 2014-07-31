@@ -12,6 +12,7 @@
 
 @interface MasterViewController : UITableViewController
 
+@property (strong, nonatomic) IBOutlet UITableView *menu;
 @property (strong, nonatomic) DetailViewController *detailViewController;
 
 @end
