@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		84C04EC0198F7FAB00C3E35D /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84C04EBF198F7FAB00C3E35D /* SystemConfiguration.framework */; };
 		84E30EB2196E6271000D40A2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84E30EB1196E6271000D40A2 /* Foundation.framework */; };
 		84E30EB4196E6271000D40A2 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84E30EB3196E6271000D40A2 /* CoreGraphics.framework */; };
 		84E30EB6196E6271000D40A2 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84E30EB5196E6271000D40A2 /* UIKit.framework */; };
@@ -23,6 +24,8 @@
 		84E30ED9196E6271000D40A2 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84E30EB5196E6271000D40A2 /* UIKit.framework */; };
 		84E30EE1196E6271000D40A2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 84E30EDF196E6271000D40A2 /* InfoPlist.strings */; };
 		84E30EE3196E6271000D40A2 /* Test_JSON_V2Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 84E30EE2196E6271000D40A2 /* Test_JSON_V2Tests.m */; };
+		84FD7AEE198A83B600685C45 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 84FD7AED198A83B600685C45 /* Reachability.m */; };
+		84FD7AF0198A88EE00685C45 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84FD7AEF198A88EE00685C45 /* CoreTelephony.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,6 +39,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		84C04EBF198F7FAB00C3E35D /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		84E30EAE196E6271000D40A2 /* Test_JSON_V2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Test_JSON_V2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		84E30EB1196E6271000D40A2 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		84E30EB3196E6271000D40A2 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -58,6 +62,9 @@
 		84E30EDE196E6271000D40A2 /* Test_JSON_V2Tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Test_JSON_V2Tests-Info.plist"; sourceTree = "<group>"; };
 		84E30EE0196E6271000D40A2 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		84E30EE2196E6271000D40A2 /* Test_JSON_V2Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Test_JSON_V2Tests.m; sourceTree = "<group>"; };
+		84FD7AEC198A83B600685C45 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
+		84FD7AED198A83B600685C45 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
+		84FD7AEF198A88EE00685C45 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +72,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				84C04EC0198F7FAB00C3E35D /* SystemConfiguration.framework in Frameworks */,
+				84FD7AF0198A88EE00685C45 /* CoreTelephony.framework in Frameworks */,
 				84E30EB4196E6271000D40A2 /* CoreGraphics.framework in Frameworks */,
 				84E30EB6196E6271000D40A2 /* UIKit.framework in Frameworks */,
 				84E30EB2196E6271000D40A2 /* Foundation.framework in Frameworks */,
@@ -106,6 +115,8 @@
 		84E30EB0196E6271000D40A2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				84C04EBF198F7FAB00C3E35D /* SystemConfiguration.framework */,
+				84FD7AEF198A88EE00685C45 /* CoreTelephony.framework */,
 				84E30EB1196E6271000D40A2 /* Foundation.framework */,
 				84E30EB3196E6271000D40A2 /* CoreGraphics.framework */,
 				84E30EB5196E6271000D40A2 /* UIKit.framework */,
@@ -117,6 +128,8 @@
 		84E30EB7196E6271000D40A2 /* Test_JSON_V2 */ = {
 			isa = PBXGroup;
 			children = (
+				84FD7AEC198A83B600685C45 /* Reachability.h */,
+				84FD7AED198A83B600685C45 /* Reachability.m */,
 				84E30EC0196E6271000D40A2 /* AppDelegate.h */,
 				84E30EC1196E6271000D40A2 /* AppDelegate.m */,
 				84E30EC3196E6271000D40A2 /* Main_iPhone.storyboard */,
@@ -212,7 +225,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 84E30EA9196E6271000D40A2 /* Build configuration list for PBXProject "VsMobile_Manual" */;
+			buildConfigurationList = 84E30EA9196E6271000D40A2 /* Build configuration list for PBXProject "Test_JSON_V2" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -262,6 +275,7 @@
 				84E30ECB196E6271000D40A2 /* MasterViewController.m in Sources */,
 				84E30EBE196E6271000D40A2 /* main.m in Sources */,
 				84E30ECE196E6271000D40A2 /* DetailViewController.m in Sources */,
+				84FD7AEE198A83B600685C45 /* Reachability.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -396,6 +410,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Test_JSON_V2/Test_JSON_V2-Prefix.pch";
 				INFOPLIST_FILE = "Test_JSON_V2/Test_JSON_V2-Info.plist";
@@ -409,6 +427,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Test_JSON_V2/Test_JSON_V2-Prefix.pch";
 				INFOPLIST_FILE = "Test_JSON_V2/Test_JSON_V2-Info.plist";
@@ -460,7 +482,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		84E30EA9196E6271000D40A2 /* Build configuration list for PBXProject "VsMobile_Manual" */ = {
+		84E30EA9196E6271000D40A2 /* Build configuration list for PBXProject "Test_JSON_V2" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				84E30EE4196E6271000D40A2 /* Debug */,

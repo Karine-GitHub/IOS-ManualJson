@@ -10,9 +10,10 @@
 
 @class DetailViewController;
 
-@interface MasterViewController : UITableViewController
+@interface MasterViewController : UITableViewController <UIAlertViewDelegate>
 
 @property (strong, nonatomic) IBOutlet UITableView *menu;
 @property (strong, nonatomic) DetailViewController *detailViewController;
+@property (strong, nonatomic) NSString *errorMsg;
 
 @end

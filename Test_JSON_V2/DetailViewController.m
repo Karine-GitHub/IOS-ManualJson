@@ -43,19 +43,28 @@
 	// Do any additional setup after loading the view, typically from a nib.
     
     // Get Application's Dependencies
-    NSError *error = [[NSError alloc] init];
-    self.application = (NSMutableDictionary *)[NSJSONSerialization JSONObjectWithData:APPLICATION_FILE options:NSJSONReadingMutableLeaves error:&error];
-    if (!self.application) {
-        NSLog(@"An error occured during the Deserialization of Application file : %@", error);
-    }
-    else {
-        if ([self.application objectForKey:@"Dependencies"]) {
-            self.appDependencies = [self.application objectForKey:@"Dependencies"];
+    @try {
+        NSError *error = [[NSError alloc] init];
+        self.application = (NSMutableDictionary *)[NSJSONSerialization JSONObjectWithData:APPLICATION_FILE options:NSJSONReadingMutableLeaves error:&error];
+        if (!self.application) {
+            NSLog(@"An error occured during the Deserialization of Application file : %@", error);
+            // Throw exception
+            NSException *e = [NSException exceptionWithName:error.localizedDescription reason:error.localizedFailureReason userInfo:error.userInfo];
+            @throw e;
+        }
+        else {
+            if ([self.application objectForKey:@"Dependencies"]) {
+                self.appDependencies = [self.application objectForKey:@"Dependencies"];
+                [self configureView];
+                self.navigationItem.backBarButtonItem.title = [self.application objectForKey:@"Name"];
+            }
         }
     }
-
-    [self configureView];
-    self.navigationItem.backBarButtonItem.title = [self.application objectForKey:@"Name"];
+    @catch  (NSException *e) {
+        _errorMsg = [NSString stringWithFormat:@"An error occured during the Loading of the Application : %@, reason : %@", e.name, e.reason];
+        UIAlertView *alertNoConnection = [[UIAlertView alloc] initWithTitle:@"Application fails" message:_errorMsg delegate:self cancelButtonTitle:@"Quit" otherButtonTitles:nil];
+        [alertNoConnection show];
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -215,6 +224,20 @@
                       , [self addFiles], htmlContent];
     
     return html;
+}
+
+#pragma mark - Alert View
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == 0) {
+        // Fermer l'application
+        //Home button
+        UIApplication *app = [UIApplication sharedApplication];
+        [app performSelector:@selector(suspend)];
+        // Wait while app is going background
+        [NSThread sleepForTimeInterval:2.0];
+        exit(0);
+    }
 }
 
 @end

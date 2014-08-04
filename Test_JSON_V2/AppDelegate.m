@@ -12,49 +12,96 @@ NSData *APPLICATION_FILE;
 NSData *FEED_FILE;
 NSString *APPLICATION_SUPPORT_PATH;
 
+// INFO : not manually throw exception here => cannot display alert view before shut down the application. More user friendly.
+
 @implementation AppDelegate
+
++ (BOOL) testConnection
+{
+    // Set the host
+    Reachability *checkConnection = [Reachability reachabilityWithHostName:@"10.1.40.37"];
+    NetworkStatus networkStatus = [checkConnection currentReachabilityStatus];
+    NSLog(@"Network Status : %d", networkStatus);
+    
+    BOOL isConnected = false;
+    switch (networkStatus) {
+        case NotReachable:
+            isConnected = false;
+            break;
+        case ReachableViaWiFi:
+            isConnected = true;
+            break;
+        case ReachableViaWWAN:
+            isConnected = [self testFastConnection];
+            break;
+        default:
+            break;
+    }
+    
+    return isConnected;
+}
+
++ (BOOL) testFastConnection
+{
+    BOOL isFast = false;
+    CTTelephonyNetworkInfo *info = [[CTTelephonyNetworkInfo alloc] init];
+    
+    if ([info.currentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyEdge] ||
+        [info.currentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyWCDMA]) {
+        isFast = false;
+    }
+    else {
+        isFast = true;
+    }
+    
+    return isFast;
+}
 
 // INFO : ExtensionType is necessary when fileName does not contain an extension (i.e. js, css, json, ...)
 - (void) saveFile:(NSString *)url fileName:(NSString *)fileName extensionType:(NSString *)extensionType dirName:(NSString*)dirName
 {
-    url = [url stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    fileName = [fileName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    extensionType = [extensionType stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    BOOL success = false;
-    //NSString *path = [NSString stringWithFormat:@"%@%@.%@", APPLICATION_SUPPORT_PATH, fileName, [AppDelegate extensionType:extensionType]];
-    NSString *path = [NSString stringWithFormat:@"%@%@", APPLICATION_SUPPORT_PATH, fileName];
-    
-    // Create Template's page directory when dependency is for a page
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSError *error = [[NSError alloc] init];
-    if (![dirName isKindOfClass:[NSNull class]]) {
-        dirName = [dirName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-        BOOL isDirectory;
-        path = [NSString stringWithFormat:@"%@%@/%@", APPLICATION_SUPPORT_PATH, dirName, fileName];
-        if (![fileManager fileExistsAtPath:[NSString stringWithFormat:@"%@%@", APPLICATION_SUPPORT_PATH, dirName] isDirectory:&isDirectory]) {
-            success = [fileManager createDirectoryAtPath:[NSString stringWithFormat:@"%@%@", APPLICATION_SUPPORT_PATH, dirName] withIntermediateDirectories:YES attributes:nil error:&error];
-            if (!success) {
-                 NSLog(@"An error occured during the Creation of Template folder : %@", error);
-            }
-        }
-    }
-
     @try {
-        //if ([AppDelegate extensionType:extensionType]) {
-            NSURL *location = [NSURL URLWithString:url];
-            if (![fileManager fileExistsAtPath:path]) {
-                success =[[NSData dataWithContentsOfURL:location] writeToFile:path options:NSDataWritingAtomic error:&error];
+        url = [url stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        fileName = [fileName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        extensionType = [extensionType stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        BOOL success = false;
+        //NSString *path = [NSString stringWithFormat:@"%@%@.%@", APPLICATION_SUPPORT_PATH, fileName, [AppDelegate extensionType:extensionType]];
+        NSString *path = [NSString stringWithFormat:@"%@%@", APPLICATION_SUPPORT_PATH, fileName];
+        
+        // Create Template's page directory when dependency is for a page
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        NSError *error = [[NSError alloc] init];
+        if (![dirName isKindOfClass:[NSNull class]]) {
+            dirName = [dirName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+            BOOL isDirectory;
+            path = [NSString stringWithFormat:@"%@%@/%@", APPLICATION_SUPPORT_PATH, dirName, fileName];
+            if (![fileManager fileExistsAtPath:[NSString stringWithFormat:@"%@%@", APPLICATION_SUPPORT_PATH, dirName] isDirectory:&isDirectory]) {
+                success = [fileManager createDirectoryAtPath:[NSString stringWithFormat:@"%@%@", APPLICATION_SUPPORT_PATH, dirName] withIntermediateDirectories:YES attributes:nil error:&error];
                 if (!success) {
-                    NSLog(@"An error occured during the Saving of the file %@ : %@", fileName, error);
+                    NSLog(@"An error occured during the Creation of Template folder : %@", error);
                 }
             }
+        }
+        //if ([AppDelegate extensionType:extensionType]) {
+        NSURL *location = [NSURL URLWithString:url];
+        if (![fileManager fileExistsAtPath:path]) {
+            success =[[NSData dataWithContentsOfURL:location] writeToFile:path options:NSDataWritingAtomic error:&error];
+            if (!success) {
+                NSLog(@"An error occured during the Saving of the file %@ : %@", fileName, error);
+            }
+        }
         //}
         //else {
-            //NSLog(@"An error occured during the Saving of the file %@ : the extension %@ is not supported yet !", fileName, extensionType);
+        //NSLog(@"An error occured during the Saving of the file %@ : the extension %@ is not supported yet !", fileName, extensionType);
         //}
     }
-    @catch (NSException *exception) {
-        NSLog(@"An error occured during the Loading of the file %@ : %@, reason : %@", fileName, exception.name, exception.reason);
+    @catch (NSException *e) {
+        NSLog(@"An error occured during the Loading of the file %@ : %@, reason : %@", fileName, e.name, e.reason);
+        UIApplication *app = [UIApplication sharedApplication];
+        [app performSelector:@selector(suspend)];
+        // Wait while app is going background
+        [NSThread sleepForTimeInterval:2.0];
+        exit(0);
     }
 }
 
@@ -150,48 +197,70 @@ NSString *APPLICATION_SUPPORT_PATH;
         NSURL *url = [NSURL URLWithString:@"http://10.1.40.37/vsMobileAPI/api/application/79e45c6e-9e87-4576-b028-609ae2902f00"];
         NSString *path = [NSString stringWithFormat:@"%@79e45c6e-9e87-4576-b028-609ae2902f00.json", APPLICATION_SUPPORT_PATH];
         if (![fileManager fileExistsAtPath:path]) {
-            APPLICATION_FILE = [NSData dataWithContentsOfURL:url];
-            success =[[NSData dataWithContentsOfURL:url] writeToFile:path options:NSDataWritingAtomic error:&error];
-            if (!success) {
-                NSLog(@"An error occured during the Saving of Application File : %@", error);
+            NSLog(@"File does not exist");
+            // Check Connection
+            success = [AppDelegate testConnection];
+            if (success) {
+                NSLog(@"Connection is OK");
+                APPLICATION_FILE = [NSData dataWithContentsOfURL:url];
+                success =[[NSData dataWithContentsOfURL:url] writeToFile:path options:NSDataWritingAtomic error:&error];
+                if (success) {
+                    _isDownloadedByNetwork = true;
+                }
+                else {
+                    NSLog(@"An error occured during the Saving of Application File : %@", error);
+                }
             }
         }
         else {
+            NSLog(@"File exists");
             APPLICATION_FILE = [NSData dataWithContentsOfFile:path options:NSDataReadingMappedIfSafe error:&error];
-            if (!APPLICATION_FILE) {
+            if (APPLICATION_FILE) {
+                _isDownloadedByFile = true;
+            }
+            else {
                 NSLog(@"An error occured during the Loading of Application File : %@", error);
             }
         }
-        self.application = (NSMutableDictionary *)[NSJSONSerialization JSONObjectWithData:APPLICATION_FILE options:NSJSONReadingMutableLeaves error:&error];
-        if (!self.application) {
-            NSLog(@"An error occured during the Deserialization of Application file : %@", error);
+        if (APPLICATION_FILE) {
+            self.application = (NSMutableDictionary *)[NSJSONSerialization JSONObjectWithData:APPLICATION_FILE options:NSJSONReadingMutableLeaves error:&error];
+            if (self.application) {
+                [self searchDependencies];
+            }
+            else {
+                NSLog(@"An error occured during the Deserialization of Application file : %@", error);                
+            }
         }
         /* TODO : Decomment when API will return Feed file
-        // Get Feed File
-        url = [NSURL URLWithString:@"http://testapp.visionit.lan:8087/api/feed/79e45c6e-9e87-4576-b028-609ae2902f00"];
-        path = [NSString stringWithFormat:@"%@myFeed.json", APPLICATION_SUPPORT_PATH];
-        if (![fileManager fileExistsAtPath:path]) {
-            FEED_FILE = [NSData dataWithContentsOfURL:url];
-            success = [[NSData dataWithContentsOfURL:url] writeToFile:path options:NSDataWritingAtomic error:&error];
-            if (!success) {
-                NSLog(@"An error occured during the Saving of Feed File : %@", error);
-            }
-        }
-        else {
-            FEED_FILE = [NSData dataWithContentsOfFile:path options:NSDataReadingMappedIfSafe error:&error];
-            if (!FEED_FILE) {
-                NSLog(@"An error occured during the Loading of Feed File : %@", error);
-            }
-        }*/
-        
-        
-        [self searchDependencies];
+         // Get Feed File
+         url = [NSURL URLWithString:@"http://testapp.visionit.lan:8087/api/feed/79e45c6e-9e87-4576-b028-609ae2902f00"];
+         path = [NSString stringWithFormat:@"%@myFeed.json", APPLICATION_SUPPORT_PATH];
+         if (![fileManager fileExistsAtPath:path]) {
+         FEED_FILE = [NSData dataWithContentsOfURL:url];
+         success = [[NSData dataWithContentsOfURL:url] writeToFile:path options:NSDataWritingAtomic error:&error];
+         if (!success) {
+         NSLog(@"An error occured during the Saving of Feed File : %@", error);
+         }
+         }
+         else {
+         FEED_FILE = [NSData dataWithContentsOfFile:path options:NSDataReadingMappedIfSafe error:&error];
+         if (!FEED_FILE) {
+         NSLog(@"An error occured during the Loading of Feed File : %@", error);
+         NSException *e = [NSException exceptionWithName:error.localizedDescription reason:error.localizedFailureReason userInfo:error.userInfo];
+         @throw e;
+         }
+         }*/
     }
     @catch (NSException *exception) {
         NSLog(@"An error occured during the Saving of a Json file : %@, reason : %@", exception.name, exception.reason);
+        UIApplication *app = [UIApplication sharedApplication];
+        [app performSelector:@selector(suspend)];
+        // Wait while app is going background
+        [NSThread sleepForTimeInterval:2.0];
+        exit(0);
     }
-    
-    return YES;
+    NSLog(@"Dl by Network : %hhd", _isDownloadedByNetwork);
+    NSLog(@"Dl by File : %hhd", _isDownloadedByFile);
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application

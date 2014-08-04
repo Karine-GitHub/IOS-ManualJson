@@ -36,20 +36,38 @@
     NSLog(@"The current device is : %@", [UIDevice currentDevice].model);
     
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
+    AppDelegate *appDel = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    NSLog(@"Dl by Network : %hhd", appDel.isDownloadedByNetwork);
+    NSLog(@"Dl by File : %hhd", appDel.isDownloadedByFile);
     
     // Get Application json file
-    
     @try {
-        NSError *error = [[NSError alloc] init];
-        application = (NSMutableDictionary *)[NSJSONSerialization JSONObjectWithData:APPLICATION_FILE options:NSJSONReadingMutableLeaves error:&error];
-        if (!application) {
-            NSLog(@"An error occured during the Loading of the Application : %@", error);
+        if (appDel.isDownloadedByNetwork || appDel.isDownloadedByFile) {
+            NSError *error = [[NSError alloc] init];
+            application = (NSMutableDictionary *)[NSJSONSerialization JSONObjectWithData:APPLICATION_FILE options:NSJSONReadingMutableLeaves error:&error];
+            if (!application) {
+                NSLog(@"An error occured during the Loading of the Application : %@", error);
+                // throw exception
+                NSException *e = [NSException exceptionWithName:error.localizedDescription reason:error.localizedFailureReason userInfo:error.userInfo];
+                @throw e;
+            }
+        }
+        else {
+            if (!appDel.isDownloadedByFile) {
+                _errorMsg = @"Impossible to download content file. The application will shut down. Sorry for the inconvenience.";
+            } else if (!appDel.isDownloadedByNetwork) {
+                _errorMsg = @"Impossible to download content on the server. The network connection is too low or off. The application will shut down. Please try later.";
+            }
+            UIAlertView *alertNoConnection = [[UIAlertView alloc] initWithTitle:@"Application fails" message:_errorMsg delegate:self cancelButtonTitle:@"Quit" otherButtonTitles:nil];
+            [alertNoConnection show];
         }
     }
-    @catch (NSException *exception) {
-        NSLog(@"An error occured during the Loading of the Application : %@, reason : %@", exception.name, exception.reason);
+    @catch (NSException *e) {
+        _errorMsg = [NSString stringWithFormat:@"An error occured during the Loading of the Application : %@, reason : %@", e.name, e.reason];
+        UIAlertView *alertNoConnection = [[UIAlertView alloc] initWithTitle:@"Application fails" message:_errorMsg delegate:self cancelButtonTitle:@"Quit" otherButtonTitles:nil];
+        [alertNoConnection show];
     }
-
+    
     for (NSString *s in application.allKeys)
     {
         NSLog(@"%@", s);
@@ -65,8 +83,11 @@
     }
     
     // Insert rows in TableView
-    [self insertNewObject];
-
+    if (application) {
+        [self insertNewObject];
+    }
+    
+    
     // Select row manually for displaying an home page when device = iPad
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [_menu selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionTop];
@@ -122,14 +143,14 @@
 }
 
 //- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-//{
-//    if (editingStyle == UITableViewCellEditingStyleDelete) {
-//        [_objects removeObjectAtIndex:indexPath.row];
-//        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-//    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-//        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
-//    }
-//}
+/*{
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        [_objects removeObjectAtIndex:indexPath.row];
+        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
+        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
+    }
+}*/
 
 /*
 // Override to support rearranging the table view.
@@ -160,6 +181,20 @@
     NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
     page = allPages[indexPath.row];
     [[segue destinationViewController] setDetailItem:page];
+}
+
+#pragma mark - Alert View
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == 0) {
+        // Fermer l'application
+        //Home button
+        UIApplication *app = [UIApplication sharedApplication];
+        [app performSelector:@selector(suspend)];
+        // Wait while app is going background
+        [NSThread sleepForTimeInterval:2.0];
+        exit(0);
+    }
 }
 
 @end

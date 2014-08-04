@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <UIKit/UIWebView.h>
 
-@interface DetailViewController : UIViewController <UISplitViewControllerDelegate, UIWebViewDelegate>
+@interface DetailViewController : UIViewController <UISplitViewControllerDelegate, UIWebViewDelegate, UIAlertViewDelegate>
 
 @property (strong, nonatomic) id detailItem;
 
@@ -20,5 +20,6 @@
 @property (strong, nonatomic) NSMutableArray *appDependencies;
 @property (strong, nonatomic) NSMutableArray *pageDependencies;
 
+@property (strong, nonatomic) NSString *errorMsg;
 
 @end
