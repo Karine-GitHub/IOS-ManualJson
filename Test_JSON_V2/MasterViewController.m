@@ -7,6 +7,7 @@
 //
 
 #import "MasterViewController.h"
+#import "IASKSettingsReader.h"
 
 #import "AppDelegate.h"
 #import "DetailViewController.h"
@@ -26,9 +27,27 @@
         self.clearsSelectionOnViewWillAppear = NO;
         self.preferredContentSize = CGSizeMake(320.0, 600.0);
     }
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(settingDidChange:) name:kIASKAppSettingChanged object:nil];
     [super awakeFromNib];
 }
+
+/*- (IASKAppSettingsViewController*)appSettingsViewController {
+	if (!self.appSettingsViewController) {
+		self.appSettingsViewController = [[IASKAppSettingsViewController alloc] init];
+		self.appSettingsViewController.delegate = self;
+		//BOOL enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"AutoConnect"];
+		//self.appSettingsViewController.hiddenKeys = enabled ? nil : [NSSet setWithObjects:@"AutoConnectLogin", @"AutoConnectPassword", nil];
+	}
+	return self.appSettingsViewController;
+}
+
+- (IBAction)showSettingsPush:(id)sender {
+	//[viewController setShowCreditsFooter:NO];   // Uncomment to not display InAppSettingsKit credits for creators.
+	// But we encourage you no to uncomment. Thank you!
+	self.appSettingsViewController.showDoneButton = NO;
+	self.appSettingsViewController.navigationItem.rightBarButtonItem = nil;
+	[self.navigationController pushViewController:self.appSettingsViewController animated:YES];
+}*/
 
 - (void)viewDidLoad
 {
@@ -36,6 +55,10 @@
     NSLog(@"The current device is : %@", [UIDevice currentDevice].model);
     
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
+
+    self.appSettingsViewController = [[IASKAppSettingsViewController alloc] init];
+    self.appSettingsViewController.delegate = self;
+    
     AppDelegate *appDel = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     NSLog(@"Dl by Network : %hhd", appDel.isDownloadedByNetwork);
     NSLog(@"Dl by File : %hhd", appDel.isDownloadedByFile);
@@ -68,16 +91,11 @@
         [alertNoConnection show];
     }
     
-    for (NSString *s in application.allKeys)
-    {
-        NSLog(@"%@", s);
-    }
     // Get all pages of the application
     if ([application objectForKey:@"Pages"]) {
         allPages = [application objectForKey:@"Pages"];
     }
-    
-    NSLog(@"All Pages Count = %d", allPages.count);
+
     if ([application objectForKey:@"Name"]) {
         self.navigationItem.title = [application objectForKey:@"Name"];
     }
@@ -86,8 +104,7 @@
     if (application) {
         [self insertNewObject];
     }
-    
-    
+
     // Select row manually for displaying an home page when device = iPad
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [_menu selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionTop];
@@ -176,11 +193,21 @@
     }
 }
 
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    return YES;
+}
+
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-    page = allPages[indexPath.row];
-    [[segue destinationViewController] setDetailItem:page];
+    if ([[segue destinationViewController] isKindOfClass:[DetailViewController class]]) {
+        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+        page = allPages[indexPath.row];
+        [[segue destinationViewController] setDetailItem:page];
+    } else if ([[segue destinationViewController] isKindOfClass:[IASKAppSettingsViewController class]]) {
+        self.appSettingsViewController.showDoneButton = NO;
+        self.appSettingsViewController.navigationItem.rightBarButtonItem = nil;
+        [self.navigationController pushViewController:self.appSettingsViewController animated:YES];
+    }
 }
 
 #pragma mark - Alert View
@@ -196,5 +223,25 @@
         exit(0);
     }
 }
+
+#pragma mark IASKAppSettingsViewControllerDelegate protocol
+- (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender {
+    
+    // Quit Settings view and show Menu view
+    [self.appSettingsViewController dismissViewControllerAnimated:YES completion:^{
+        [self presentViewController:self animated:YES completion:nil];
+    }];
+	// your code here to reconfigure the app for changed settings
+}
+
+#pragma mark kIASKAppSettingChanged notification
+- (void)settingDidChange:(NSNotification*)notification {
+	/*if ([notification.object isEqual:@"AutoConnect"]) {
+		IASKAppSettingsViewController *activeController = self.tabBarController.selectedIndex ? self.tabAppSettingsViewController : self.appSettingsViewController;
+		BOOL enabled = (BOOL)[[notification.userInfo objectForKey:@"AutoConnect"] intValue];
+		[activeController setHiddenKeys:enabled ? nil : [NSSet setWithObjects:@"AutoConnectLogin", @"AutoConnectPassword", nil] animated:YES];
+	}*/
+}
+
 
 @end

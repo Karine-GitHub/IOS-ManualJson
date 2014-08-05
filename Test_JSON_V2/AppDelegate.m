@@ -188,14 +188,19 @@ NSString *APPLICATION_SUPPORT_PATH;
         NSLog(@"An error occured during the Creation of Application Support folder : %@", error);
     }
     
+    bundle = [[NSBundle mainBundle] pathForResource:@"Configuration" ofType:@"plist"];
+    NSDictionary *config = [[NSDictionary alloc] initWithContentsOfFile:bundle];
+    
 #pragma Download & save Json Files
     // Read Json file in network. WARNING : ID EN DUR !!
     @try {
         BOOL success = false;
         // Get Application File
-        //NSURL *url =  [NSURL URLWithString:@"http://testapp.visionit.lan:8087/api/application/79e45c6e-9e87-4576-b028-609ae2902f00"];
-        NSURL *url = [NSURL URLWithString:@"http://10.1.40.37/vsMobileAPI/api/application/79e45c6e-9e87-4576-b028-609ae2902f00"];
-        NSString *path = [NSString stringWithFormat:@"%@79e45c6e-9e87-4576-b028-609ae2902f00.json", APPLICATION_SUPPORT_PATH];
+        // Get config file
+        NSString *webApi = [NSString stringWithFormat:@"%@%@", [config objectForKey:@"WebAPI"], [config objectForKey:@"ApplicationID"]];
+        NSURL *url = [NSURL URLWithString:webApi];
+        
+        NSString *path = [NSString stringWithFormat:@"%@%@.json", APPLICATION_SUPPORT_PATH, [config objectForKey:@"ApplicationID"]];
         if (![fileManager fileExistsAtPath:path]) {
             NSLog(@"File does not exist");
             // Check Connection

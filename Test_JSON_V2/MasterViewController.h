@@ -7,11 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "IASKAppSettingsViewController.h"
 
 @class DetailViewController;
 
-@interface MasterViewController : UITableViewController <UIAlertViewDelegate>
+@interface MasterViewController : UITableViewController <UIAlertViewDelegate, IASKSettingsDelegate, UITextViewDelegate>
 
+@property (nonatomic, retain) IASKAppSettingsViewController *appSettingsViewController;
+
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *Settings;
 @property (strong, nonatomic) IBOutlet UITableView *menu;
 @property (strong, nonatomic) DetailViewController *detailViewController;
 @property (strong, nonatomic) NSString *errorMsg;
