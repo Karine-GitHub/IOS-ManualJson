@@ -199,4 +199,23 @@
     }
 }
 
+#pragma mark IASKAppSettingsViewControllerDelegate protocol
+- (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender {
+    
+        // Quit Settings view and show Menu view
+        [self.appSettingsViewController dismissViewControllerAnimated:YES completion:^{
+                [self presentViewController:self animated:YES completion:nil];
+            }];
+    	// your code here to reconfigure the app for changed settings
+}
+
+#pragma mark kIASKAppSettingChanged notification
+- (void)settingDidChange:(NSNotification*)notification {
+    	/*if ([notification.object isEqual:@"AutoConnect"]) {
+         		IASKAppSettingsViewController *activeController = self.tabBarController.selectedIndex ? self.tabAppSettingsViewController : self.appSettingsViewController;
+         		BOOL enabled = (BOOL)[[notification.userInfo objectForKey:@"AutoConnect"] intValue];
+         		[activeController setHiddenKeys:enabled ? nil : [NSSet setWithObjects:@"AutoConnectLogin", @"AutoConnectPassword", nil] animated:YES];
+         	}*/
+    }
+
 @end
