@@ -31,24 +31,6 @@
     [super awakeFromNib];
 }
 
-/*- (IASKAppSettingsViewController*)appSettingsViewController {
-	if (!self.appSettingsViewController) {
-		self.appSettingsViewController = [[IASKAppSettingsViewController alloc] init];
-		self.appSettingsViewController.delegate = self;
-		//BOOL enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"AutoConnect"];
-		//self.appSettingsViewController.hiddenKeys = enabled ? nil : [NSSet setWithObjects:@"AutoConnectLogin", @"AutoConnectPassword", nil];
-	}
-	return self.appSettingsViewController;
-}
-
-- (IBAction)showSettingsPush:(id)sender {
-	//[viewController setShowCreditsFooter:NO];   // Uncomment to not display InAppSettingsKit credits for creators.
-	// But we encourage you no to uncomment. Thank you!
-	self.appSettingsViewController.showDoneButton = NO;
-	self.appSettingsViewController.navigationItem.rightBarButtonItem = nil;
-	[self.navigationController pushViewController:self.appSettingsViewController animated:YES];
-}*/
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -216,25 +198,5 @@
         exit(0);
     }
 }
-
-#pragma mark IASKAppSettingsViewControllerDelegate protocol
-- (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender {
-    
-    // Quit Settings view and show Menu view
-    [self.appSettingsViewController dismissViewControllerAnimated:YES completion:^{
-        [self presentViewController:self animated:YES completion:nil];
-    }];
-	// your code here to reconfigure the app for changed settings
-}
-
-#pragma mark kIASKAppSettingChanged notification
-- (void)settingDidChange:(NSNotification*)notification {
-	/*if ([notification.object isEqual:@"AutoConnect"]) {
-		IASKAppSettingsViewController *activeController = self.tabBarController.selectedIndex ? self.tabAppSettingsViewController : self.appSettingsViewController;
-		BOOL enabled = (BOOL)[[notification.userInfo objectForKey:@"AutoConnect"] intValue];
-		[activeController setHiddenKeys:enabled ? nil : [NSSet setWithObjects:@"AutoConnectLogin", @"AutoConnectPassword", nil] animated:YES];
-	}*/
-}
-
 
 @end
