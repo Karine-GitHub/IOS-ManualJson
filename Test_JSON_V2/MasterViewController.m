@@ -55,9 +55,6 @@
     NSLog(@"The current device is : %@", [UIDevice currentDevice].model);
     
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
-
-    self.appSettingsViewController = [[IASKAppSettingsViewController alloc] init];
-    self.appSettingsViewController.delegate = self;
     
     AppDelegate *appDel = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     NSLog(@"Dl by Network : %hhd", appDel.isDownloadedByNetwork);
@@ -203,10 +200,6 @@
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
         page = allPages[indexPath.row];
         [[segue destinationViewController] setDetailItem:page];
-    } else if ([[segue destinationViewController] isKindOfClass:[IASKAppSettingsViewController class]]) {
-        self.appSettingsViewController.showDoneButton = NO;
-        self.appSettingsViewController.navigationItem.rightBarButtonItem = nil;
-        [self.navigationController pushViewController:self.appSettingsViewController animated:YES];
     }
 }
 

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		841C5B9519920C2700EC6CB3 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 841C5B9419920C2700EC6CB3 /* Settings.bundle */; };
 		84245C221990CE5D0013A9D2 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84245C211990CE5D0013A9D2 /* MessageUI.framework */; };
 		84245C251990E1E40013A9D2 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84C04EBF198F7FAB00C3E35D /* SystemConfiguration.framework */; };
 		84245C2F199107B50013A9D2 /* 20-gear2.png in Resources */ = {isa = PBXBuildFile; fileRef = 84245C2E199107B50013A9D2 /* 20-gear2.png */; };
@@ -24,7 +25,6 @@
 		848056C11990C42E00F66A1E /* IASKSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 848056B11990C42E00F66A1E /* IASKSlider.m */; };
 		848056C21990C42E00F66A1E /* IASKSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = 848056B31990C42E00F66A1E /* IASKSwitch.m */; };
 		848056C31990C42E00F66A1E /* IASKTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 848056B51990C42E00F66A1E /* IASKTextField.m */; };
-		84C04EC2198F90D700C3E35D /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 84C04EC1198F90D700C3E35D /* Settings.bundle */; };
 		84C04EC4198FB8A500C3E35D /* Configuration.plist in Resources */ = {isa = PBXBuildFile; fileRef = 84C04EC3198FB8A500C3E35D /* Configuration.plist */; };
 		84E30EB2196E6271000D40A2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84E30EB1196E6271000D40A2 /* Foundation.framework */; };
 		84E30EB4196E6271000D40A2 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84E30EB3196E6271000D40A2 /* CoreGraphics.framework */; };
@@ -57,6 +57,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		841C5B9419920C2700EC6CB3 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		84245C211990CE5D0013A9D2 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		84245C2E199107B50013A9D2 /* 20-gear2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "20-gear2.png"; sourceTree = "<group>"; };
 		848056931990C3BD00F66A1E /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -90,7 +91,6 @@
 		848056B41990C42E00F66A1E /* IASKTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKTextField.h; sourceTree = "<group>"; };
 		848056B51990C42E00F66A1E /* IASKTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKTextField.m; sourceTree = "<group>"; };
 		84C04EBF198F7FAB00C3E35D /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
-		84C04EC1198F90D700C3E35D /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		84C04EC3198FB8A500C3E35D /* Configuration.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Configuration.plist; sourceTree = "<group>"; };
 		84E30EAE196E6271000D40A2 /* Test_JSON_V2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Test_JSON_V2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		84E30EB1196E6271000D40A2 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -251,7 +251,6 @@
 		84E30EB7196E6271000D40A2 /* Test_JSON_V2 */ = {
 			isa = PBXGroup;
 			children = (
-				84245C2D199107210013A9D2 /* Ressources */,
 				848056951990C42E00F66A1E /* InAppSettingsKit */,
 				84FD7AEC198A83B600685C45 /* Reachability.h */,
 				84FD7AED198A83B600685C45 /* Reachability.m */,
@@ -264,9 +263,10 @@
 				84E30ECC196E6271000D40A2 /* DetailViewController.h */,
 				84E30ECD196E6271000D40A2 /* DetailViewController.m */,
 				84E30ECF196E6271000D40A2 /* Images.xcassets */,
-				84E30EB8196E6271000D40A2 /* Supporting Files */,
-				84C04EC1198F90D700C3E35D /* Settings.bundle */,
 				84C04EC3198FB8A500C3E35D /* Configuration.plist */,
+				84E30EB8196E6271000D40A2 /* Supporting Files */,
+				84245C2D199107210013A9D2 /* Ressources */,
+				841C5B9419920C2700EC6CB3 /* Settings.bundle */,
 			);
 			path = Test_JSON_V2;
 			sourceTree = "<group>";
@@ -380,10 +380,10 @@
 				84245C2F199107B50013A9D2 /* 20-gear2.png in Resources */,
 				84E30EC8196E6271000D40A2 /* Main_iPad.storyboard in Resources */,
 				84E30ED0196E6271000D40A2 /* Images.xcassets in Resources */,
-				84C04EC2198F90D700C3E35D /* Settings.bundle in Resources */,
 				84C04EC4198FB8A500C3E35D /* Configuration.plist in Resources */,
 				84E30EC5196E6271000D40A2 /* Main_iPhone.storyboard in Resources */,
 				84E30EBC196E6271000D40A2 /* InfoPlist.strings in Resources */,
+				841C5B9519920C2700EC6CB3 /* Settings.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
